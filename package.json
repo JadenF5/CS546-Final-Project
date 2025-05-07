@@ -1,0 +1,28 @@
+{
+    "name": "project",
+    "version": "1.0.0",
+    "main": "app.js",
+    "type": "module",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JadenF5/CS546-Final-Project.git"
+    },
+    "author": "Harishan",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/JadenF5/CS546-Final-Project/issues"
+    },
+    "homepage": "https://github.com/JadenF5/CS546-Final-Project#readme",
+    "description": "",
+    "dependencies": {
+        "bcryptjs": "^3.0.2",
+        "express": "^4.21.2",
+        "express-handlebars": "^8.0.1",
+        "express-session": "^1.18.1",
+        "mongodb": "^6.16.0",
+        "xss": "^1.0.15"
+    }
+}
