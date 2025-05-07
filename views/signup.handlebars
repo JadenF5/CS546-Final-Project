@@ -1,0 +1,37 @@
+<h1>Sign Up</h1>
+<form method="POST" action="/signup">
+    <label>Email:</label>
+    <input type="email" name="email" required />
+
+    <label>Username:</label>
+    <input type="text" name="username" required />
+
+    <label>Password:</label>
+    <input type="password" name="password" required />
+
+    <label>Confirm Password:</label>
+    <input type="password" name="confirmPassword" required />
+
+    <label>Favorite Game(s):</label>
+    <select id="favoriteGames" name="favoriteGames" multiple size="5" required>
+        <option value="Marvel Rivals">Marvel Rivals</option>
+        <option value="Overwatch 2">Overwatch 2</option>
+        <option value="Valorant">Valorant</option>
+        <option value="League of Legends">League of Legends</option>
+        <option value="Teamfight Tactics">Teamfight Tactics</option>
+    </select>
+
+    <div id="charactersWrapper" style="display: none;">
+        <label>Favorite Characters:</label>
+        <select
+            id="favoriteCharacters"
+            name="favoriteCharacters"
+            multiple
+            size="10"
+        ></select>
+    </div>
+
+    <button type="submit">Create Account</button>
+</form>
+
+<script src="/js/signup.js"></script>

@@ -1,6 +1,12 @@
 import express from "express";
 import xss from "xss";
-import { registerUser, loginUser } from "../data/users.js";
+import { registerUser, loginUser } from "../data/user.js";
+import {
+    getLeagueCharacters,
+    getTFTChampions,
+    getMarvelRivalsCharacters,
+    getValorantAgents,
+} from "../services/gameApi.js";
 
 const router = express.Router();
 
@@ -8,7 +14,15 @@ router
     .route("/signup")
     .get(async (req, res) => {
         if (req.session.user) return res.redirect("/dashboard");
-        res.render("signup", { title: "Sign Up" });
+
+        const characters = {
+            "League of Legends": await getLeagueCharacters(),
+            "Teamfight Tactics": await getTFTChampions(),
+            "Marvel Rivals": await getMarvelRivalsCharacters(),
+            Valorant: await getValorantAgents(),
+        };
+
+        res.render("signup", { title: "Sign Up", characters });
     })
     .post(async (req, res) => {
         const { email, username, password, confirmPassword } = req.body;
@@ -57,6 +71,29 @@ router.route("/logout").get((req, res) => {
         res.clearCookie("AuthCookie");
         res.render("logout", { title: "Logged Out" });
     });
+});
+
+router.get("/api/characters", async (req, res) => {
+    const { game } = req.query;
+    try {
+        switch (game) {
+            case "Marvel Rivals":
+                return res.json({
+                    characters: await getMarvelRivalsCharacters(),
+                });
+            case "League of Legends":
+                return res.json({ characters: await getLeagueCharacters() });
+            case "Valorant":
+                return res.json({ characters: await getValorantAgents() });
+            case "Teamfight Tactics":
+                return res.json({ characters: await getTFTChampions() });
+            default:
+                return res.json({ characters: [] });
+        }
+    } catch (e) {
+        console.error("Character API error", e);
+        return res.status(500).json({ characters: [] });
+    }
 });
 
 export default router;

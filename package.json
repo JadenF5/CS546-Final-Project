@@ -18,6 +18,7 @@
     "homepage": "https://github.com/JadenF5/CS546-Final-Project#readme",
     "description": "",
     "dependencies": {
+        "axios": "^1.9.0",
         "bcryptjs": "^3.0.2",
         "express": "^4.21.2",
         "express-handlebars": "^8.0.1",

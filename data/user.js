@@ -12,6 +12,8 @@ export const registerUser = async ({
     username,
     password,
     confirmPassword,
+    favoriteGame,
+    favoriteCharacters = [],
 }) => {
     if (!email || !username || !password || !confirmPassword)
         throw "All fields are required.";
@@ -38,14 +40,25 @@ export const registerUser = async ({
 
     const hashedPassword = await bcrypt.hash(validatedPassword, 12);
 
+    const selectedGames = favoriteGame ? [favoriteGame] : [];
+    const favoriteCharObj =
+        favoriteGame && favoriteCharacters.length
+            ? {
+                  [favoriteGame]: Array.isArray(favoriteCharacters)
+                      ? favoriteCharacters
+                      : [favoriteCharacters],
+              }
+            : {};
+
     const newUser = {
         email: normalizedEmail,
         username: normalizedUsername,
         hashedPassword,
         role: "user",
         bio: "",
-        selectedGames: [],
-        favoriteCharacters: {},
+        platforms: [],
+        selectedGames,
+        favoriteCharacters: favoriteCharObj,
         friends: [],
         achievements: [],
         privacySettings: {
