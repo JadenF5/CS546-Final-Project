@@ -2,6 +2,9 @@ import express from "express";
 import authRouter from "./auth.js";
 import dashboardRouter from "./dashboard.js";
 import gamesRouter from "./games.js";
+import threadsRouter from "./threads.js"
+import postsRouter from './posts.js';
+
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -13,4 +16,6 @@ export default (app) => {
     app.use("/", authRouter); // signup, login, logout
     app.use("/", dashboardRouter);
     app.use("/", gamesRouter);
+    app.use("/", threadsRouter);
+    app.use("/", postsRouter);
 };

@@ -37,6 +37,7 @@ const hbs = exphbs.create({
         lookup: (obj, field) => (obj && obj[field] ? obj[field] : null),
         isSelected: (game, selectedGames) =>
             selectedGames && selectedGames.includes(game),
+        ifEquals: (a, b, options) => (a === b ? options.fn(this) : options.inverse(this)),
     },
 });
 app.engine("handlebars", hbs.engine);

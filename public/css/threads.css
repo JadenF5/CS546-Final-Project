@@ -1,0 +1,119 @@
+.threads-page {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.create-thread {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+
+.create-thread .btn {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+}
+
+.create-thread .btn:hover {
+    background-color: #0056b3;
+}
+
+.thread-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    background-color: #fafafa;
+    transition: box-shadow 0.2s ease;
+}
+
+.thread-card:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.thread-card h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+}
+
+.thread-card h2 a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.thread-card h2 a:hover {
+    text-decoration: underline;
+}
+
+.thread-card p {
+    margin-bottom: 0.75rem;
+    color: #555;
+}
+
+.meta {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.empty-state {
+    text-align: center;
+    margin-top: 2rem;
+    font-style: italic;
+}
+
+.empty-state .btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #6c757d;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.empty-state .btn:hover {
+    background: #5a6268;
+}
+
+.thread-sort {
+    margin-bottom: 1rem;
+}
+
+.thread-sort form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; 
+}
+
+.thread-sort label {
+    font-weight: bold;
+}
+
+.thread-sort select {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+}

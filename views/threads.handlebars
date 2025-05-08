@@ -1,0 +1,38 @@
+<div class="threads-page">
+    <header>
+        <h1>Threads for {{character}} in {{gameName}}</h1>
+        <a href="/games/{{gameName}}" class="btn btn-secondary">← Back to Game Page</a>
+    </header>
+
+    <div class="thread-sort">
+        <form method="GET" action="">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+                <option value="latest" {{#ifEquals sort "latest"}}selected{{/ifEquals}}>Latest</option>
+                <option value="liked" {{#ifEquals sort "liked"}}selected{{/ifEquals}}>Most Liked</option>
+                <option value="all" {{#ifEquals sort "all"}}selected{{/ifEquals}}>All</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="create-thread">
+        <a href="/posts/new?game={{gameName}}&character={{character}}" class="btn btn-primary">Create New Thread</a>
+    </div>
+
+    {{#if threads.length}}
+        {{#each threads}}
+            <div class="thread-card">
+                <h2><a href="/posts/{{this._id}}">{{this.title}}</a></h2>
+                <p>{{this.body}}</p>
+                <div class="meta">
+                    <span>By {{this.username}}</span>
+                    <span>{{this.timestamp}}</span>
+                    <span>{{this.likes}} likes</span>
+                    <span>{{this.comments.length}} comments</span>
+                </div>
+            </div>
+        {{/each}}
+    {{else}}
+        <p>No threads found for {{character}}.</p>
+    {{/if}}
+</div>
