@@ -6,6 +6,7 @@ import {
     getTFTChampions,
     getMarvelRivalsCharacters,
     getValorantAgents,
+    getOverwatch2Heroes
 } from "../services/gameApi.js";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router
                 "Teamfight Tactics": await getTFTChampions(),
                 "Marvel Rivals": await getMarvelRivalsCharacters(),
                 Valorant: await getValorantAgents(),
+                "Overwatch 2": (await getOverwatch2Heroes()).map(h => h.name), 
             };
 
             // Pass characters data to the template
@@ -83,6 +85,7 @@ router
                 "Teamfight Tactics": await getTFTChampions(),
                 "Marvel Rivals": await getMarvelRivalsCharacters(),
                 Valorant: await getValorantAgents(),
+                "Overwatch 2": (await getOverwatch2Heroes()).map(h => h.name), 
             };
 
             // Render form with error
@@ -140,6 +143,9 @@ router.get("/api/characters", async (req, res) => {
                 return res.json({ characters: await getValorantAgents() });
             case "Teamfight Tactics":
                 return res.json({ characters: await getTFTChampions() });
+            case "Overwatch 2":
+                const owHeroes = await getOverwatch2Heroes();
+                return res.json({ characters: owHeroes.map(h => h.name) });
             default:
                 return res.json({ characters: [] });
         }

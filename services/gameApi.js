@@ -61,3 +61,27 @@ export async function getValorantAgents() {
         .filter((agent) => agent.isPlayableCharacter)
         .map((agent) => agent.displayName);
 }
+
+
+// Overwatch 2 - using OverFast API
+export async function getOverwatch2Heroes() {
+try {
+    const res = await axios.get("https://overfast-api.tekrop.fr/heroes", {
+        params: {
+            locale: "en-us"
+        }
+    });
+    return res.data.map((hero) => ({
+        name: hero.name,
+        key: hero.key,
+        role: hero.role,
+        portrait: hero.portrait
+    }));
+} catch (e) {
+    console.error("Failed to fetch Overwatch 2 heroes.", e.message);
+    return [
+        { name: "Tracer", key: "tracer", role: "damage", portrait: "" },
+        { name: "Reinhardt", key: "reinhardt", role: "tank", portrait: "" }
+    ];
+}
+}

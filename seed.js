@@ -62,6 +62,17 @@ async function seedGames() {
                 { name: "Lux", role: "Sorcerer", image: "lux_tft.png" },
             ],
         },
+        {
+            name: "Overwatch 2",
+            genre: "Hero Shooter",
+            platforms: ["PC", "PlayStation", "Xbox"],
+            characters: [
+                { name: "Tracer", role: "Damage", image: "tracer.png" },
+                { name: "Reinhardt", role: "Tank", image: "reinhardt.png" },
+                { name: "Mercy", role: "Support", image: "mercy.png" },
+                { name: "Genji", role: "Damage", image: "genji.png" }
+            ]
+        }
     ];
 
     await gamesCollection.insertMany(gameData);
@@ -117,11 +128,12 @@ async function seedUsers() {
             role: "user",
             bio: "Avid gamer who loves MOBAs and FPS games",
             platforms: ["PC"],
-            selectedGames: ["League of Legends", "Valorant", "Marvel Rivals"],
+            selectedGames: ["League of Legends", "Valorant", "Marvel Rivals", "Overwatch 2"],
             favoriteCharacters: {
                 "League of Legends": ["Ezreal", "Lux"],
                 Valorant: ["Jett"],
                 "Marvel Rivals": ["Iron Man", "Doctor Strange"],
+                "Overwatch 2": ["Tracer", "Mercy"]
             },
             friends: [],
             privacySettings: {
@@ -257,6 +269,21 @@ async function seedPosts(usersList, gameData) {
         likes: 12,
         comments: [],
         timestamp: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+    });
+
+    // Post for Overwatch 2
+    postData.push({
+        userId: user1._id.toString(),
+        username: user1.username,
+        game: "Overwatch 2",
+        character: "Genji",
+        title: "Genji tips for beginners",
+        body: "Mastering Genji's dash and deflect can carry games. Here’s what worked for me...",
+        tags: ["guide", "genji", "mechanics"],
+        media: [],
+        likes: 10,
+        comments: [],
+        timestamp: new Date(Date.now() - 14400000).toISOString() // 4 hours ago
     });
 
     await postsCollection.insertMany(postData);
