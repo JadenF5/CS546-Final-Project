@@ -22,7 +22,7 @@ router
                 "League of Legends": await getLeagueCharacters(),
                 "Teamfight Tactics": await getTFTChampions(),
                 "Marvel Rivals": await getMarvelRivalsCharacters(),
-                Valorant: await getValorantAgents(),
+                "Valorant": await getValorantAgents(),
                 "Overwatch 2": (await getOverwatch2Heroes()).map(h => h.name), 
             };
 
