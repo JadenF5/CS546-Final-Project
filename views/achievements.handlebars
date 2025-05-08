@@ -1,0 +1,19 @@
+<div class="achievements-page">
+    <h1>Available Achievements</h1>
+
+    {{#each allAchievements}}
+        <div class="achievement-card {{#if (includes ../userAchievements this.name)}}unlocked{{else}}locked{{/if}}">
+            <h2>{{this.name}}</h2>
+            <p>{{this.description}}</p>
+            <span class="badge-status">
+                {{#if (includes ../userAchievements this.name)}}
+                    Earned on {{lookup ../earnedMap this.name}}
+                {{else}}
+                    Locked
+                {{/if}}
+            </span>
+        </div>
+    {{/each}}
+
+    <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+</div>

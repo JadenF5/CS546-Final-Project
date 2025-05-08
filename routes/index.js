@@ -4,6 +4,7 @@ import dashboardRouter from "./dashboard.js";
 import gamesRouter from "./games.js";
 import threadsRouter from "./threads.js"
 import postsRouter from './posts.js';
+import achievementRoutes from "./achievements.js";
 
 const router = express.Router();
 import userRoutes from './users.js';
@@ -20,4 +21,5 @@ export default (app) => {
     app.use("/", threadsRouter);
     app.use("/", postsRouter);
     app.use('/', userRoutes);
+    app.use("/", achievementRoutes);
 };

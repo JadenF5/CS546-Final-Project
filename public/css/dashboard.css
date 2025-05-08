@@ -317,6 +317,30 @@
     background-color: #0051b3;
 }
 
+.dashboard-header-actions {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.dashboard-btn {
+    background-color: #0070f3;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.dashboard-btn:hover {
+    background-color: #0051b3;
+}
+
 @media (max-width: 768px) {
     .dashboard-header {
         flex-direction: column;
@@ -333,6 +357,17 @@
     .game-tab {
         font-size: 13px;
         padding: 6px 12px;
+    }
+
+    .dashboard-header-actions {
+        position: static;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-btn {
+        width: 100%;
+        text-align: center;
     }
 
 }

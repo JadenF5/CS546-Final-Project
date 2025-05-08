@@ -1,5 +1,8 @@
 <div class="dashboard-container">
-    <a href="/profile/{{user._id}}" class="view-profile-btn-fixed">View Profile</a>
+    <div class="dashboard-header-actions">
+        <a href="/achievements" class="dashboard-btn">Achievements</a>
+        <a href="/profile/{{user._id}}" class="dashboard-btn">View Profile</a>
+    </div>
     <header class="dashboard-header">
         <div class="dashboard-header-top">
             <h1>Welcome, {{user.username}}!</h1>
