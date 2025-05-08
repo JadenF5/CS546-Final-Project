@@ -1,0 +1,318 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.role-badge.user {
+    background-color: #e6f7ff;
+    color: #0070f3;
+}
+
+.role-badge.superuser {
+    background-color: #fff2e6;
+    color: #fa8c16;
+}
+
+.game-navigation {
+    margin-bottom: 30px;
+}
+
+.game-navigation h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+}
+
+.game-tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.game-tab {
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: #f5f5f5;
+    color: #555;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.game-tab:hover {
+    background-color: #e0e0e0;
+}
+
+.game-tab.selected {
+    background-color: #0070f3;
+    color: white;
+}
+
+.dashboard-section {
+    margin-bottom: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+}
+
+.dashboard-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+    color: #333;
+    font-size: 20px;
+}
+
+.games-grid,
+.friends-grid,
+.other-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.game-card {
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+}
+
+.game-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.game-header {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.game-genre {
+    font-size: 13px;
+    color: #777;
+}
+
+.game-characters,
+.game-threads {
+    padding: 15px;
+}
+
+.game-characters h4,
+.game-threads h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.character-list,
+.thread-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.character-list li {
+    margin-bottom: 5px;
+    padding: 3px 0;
+}
+
+.thread-list li {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+}
+
+.thread-link {
+    display: block;
+    color: #333;
+    text-decoration: none;
+}
+
+.thread-link:hover .thread-title {
+    color: #0070f3;
+}
+
+.thread-title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.thread-character {
+    display: block;
+    font-size: 12px;
+    color: #777;
+}
+
+.no-characters,
+.no-threads {
+    color: #777;
+    font-style: italic;
+}
+
+.friend-card {
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+}
+
+.friend-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.friend-header {
+    padding: 15px;
+    background-color: #f0f7ff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.friend-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.friend-games {
+    padding: 15px;
+}
+
+.friend-games h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.friend-games ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.game-card.small {
+    padding: 15px;
+}
+
+.game-card.small h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.game-card.small p {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s, color 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #0070f3;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0051b3;
+}
+
+.btn-secondary {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e5e5;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 30px;
+}
+
+.empty-state p {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .games-grid,
+    .friends-grid,
+    .other-games-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-tab {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+}

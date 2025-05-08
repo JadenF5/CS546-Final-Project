@@ -15,30 +15,82 @@ router
     .get(async (req, res) => {
         if (req.session.user) return res.redirect("/dashboard");
 
-        const characters = {
-            "League of Legends": await getLeagueCharacters(),
-            "Teamfight Tactics": await getTFTChampions(),
-            "Marvel Rivals": await getMarvelRivalsCharacters(),
-            Valorant: await getValorantAgents(),
-        };
+        try {
+            // Fetch characters for all games
+            const characters = {
+                "League of Legends": await getLeagueCharacters(),
+                "Teamfight Tactics": await getTFTChampions(),
+                "Marvel Rivals": await getMarvelRivalsCharacters(),
+                Valorant: await getValorantAgents(),
+            };
 
-        res.render("signup", { title: "Sign Up", characters });
+            // Pass characters data to the template
+            res.render("signup", {
+                title: "Sign Up",
+                allGameCharacters: characters,
+            });
+        } catch (e) {
+            console.error("Error fetching game characters:", e);
+            res.status(500).render("error", {
+                title: "Error",
+                error: "Could not load game data. Please try again later.",
+            });
+        }
     })
     .post(async (req, res) => {
-        const { email, username, password, confirmPassword } = req.body;
-
         try {
-            const user = await registerUser({
+            // Extract form data
+            const { email, username, password, confirmPassword, role } =
+                req.body;
+
+            // Handle favorite games (ensure it's an array)
+            let favoriteGames = req.body.favoriteGames;
+            if (favoriteGames && !Array.isArray(favoriteGames)) {
+                favoriteGames = [favoriteGames];
+            }
+
+            // Handle favorite characters (ensure it's an array)
+            let favoriteCharacters = req.body.favoriteCharacters;
+            if (favoriteCharacters && !Array.isArray(favoriteCharacters)) {
+                favoriteCharacters = [favoriteCharacters];
+            }
+
+            // Apply XSS sanitization to all inputs
+            const sanitizedData = {
                 email: xss(email),
                 username: xss(username),
                 password: xss(password),
                 confirmPassword: xss(confirmPassword),
-            });
-            if (user) return res.redirect("/login");
+                role: xss(role), // Sanitize the role input
+                favoriteGames: Array.isArray(favoriteGames)
+                    ? favoriteGames.map((game) => xss(game))
+                    : [],
+                favoriteCharacters: Array.isArray(favoriteCharacters)
+                    ? favoriteCharacters.map((char) => xss(char))
+                    : [],
+            };
+
+            // Register the user
+            const user = await registerUser(sanitizedData);
+
+            if (user) {
+                return res.redirect("/login");
+            }
         } catch (e) {
-            return res
-                .status(400)
-                .render("signup", { title: "Sign Up", error: e });
+            // Refetch characters data for re-rendering the form
+            const characters = {
+                "League of Legends": await getLeagueCharacters(),
+                "Teamfight Tactics": await getTFTChampions(),
+                "Marvel Rivals": await getMarvelRivalsCharacters(),
+                Valorant: await getValorantAgents(),
+            };
+
+            // Render form with error
+            return res.status(400).render("signup", {
+                title: "Sign Up",
+                error: e.toString(),
+                allGameCharacters: characters,
+            });
         }
     });
 
@@ -60,9 +112,10 @@ router
             req.session.user = user;
             return res.redirect("/dashboard");
         } catch (e) {
-            return res
-                .status(400)
-                .render("login", { title: "Login", error: e });
+            return res.status(400).render("login", {
+                title: "Login",
+                error: e.toString(),
+            });
         }
     });
 

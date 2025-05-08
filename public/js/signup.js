@@ -1,44 +1,52 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const gamesSelect = document.getElementById("favoriteGames");
+document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll(
+        '#favoriteGames input[type="checkbox"]'
+    );
+    const charactersWrapper = document.getElementById("charactersWrapper");
     const charactersSelect = document.getElementById("favoriteCharacters");
 
-    async function fetchCharacters(game) {
-        try {
-            const res = await fetch(
-                `/api/characters?game=${encodeURIComponent(game)}`
-            );
-            if (!res.ok) return [];
-            const data = await res.json();
-            return data.characters || [];
-        } catch (e) {
-            console.error(`Failed to load characters for ${game}`, e);
-            return [];
-        }
-    }
+    // Get character data from server
+    const allGameCharacters = window.allGameCharacters || {}; // from server
 
-    async function updateCharacters() {
-        charactersSelect.innerHTML = ""; // reset
-        const selectedGames = Array.from(gamesSelect.selectedOptions)
-            .map((o) => o.value)
-            .filter((v) => v !== "None");
+    function updateCharacterOptions() {
+        // Clear existing options
+        charactersSelect.innerHTML = "";
 
-        let allCharacters = [];
-        for (const game of selectedGames) {
-            const chars = await fetchCharacters(game);
-            allCharacters = [...allCharacters, ...chars];
-        }
+        let anyChecked = false;
 
-        const seen = new Set();
-        allCharacters.forEach((char) => {
-            if (!seen.has(char)) {
-                seen.add(char);
-                const opt = document.createElement("option");
-                opt.value = char;
-                opt.textContent = char;
-                charactersSelect.appendChild(opt);
+        // For each checked game, add its characters as options
+        checkboxes.forEach((checkbox) => {
+            if (checkbox.checked) {
+                const game = checkbox.value;
+                anyChecked = true;
+                const characters = allGameCharacters[game] || [];
+
+                // Add characters for this game
+                characters.forEach((char) => {
+                    const option = document.createElement("option");
+                    option.value = `${game}:${char}`;
+                    option.text = `${char} (${game})`;
+                    charactersSelect.appendChild(option);
+                });
             }
         });
+
+        // Show or hide the characters wrapper based on whether any games are checked
+        charactersWrapper.style.display = anyChecked ? "block" : "none";
+
+        // Log for debugging
+        console.log("Games checked:", anyChecked);
+        console.log(
+            "Character options updated:",
+            charactersSelect.options.length
+        );
     }
 
-    gamesSelect.addEventListener("change", updateCharacters);
+    // Add event listeners to checkboxes
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", updateCharacterOptions);
+    });
+
+    // Initial call to set correct state
+    updateCharacterOptions();
 });

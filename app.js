@@ -34,6 +34,9 @@ const hbs = exphbs.create({
     defaultLayout: "main",
     helpers: {
         json: (context) => JSON.stringify(context),
+        lookup: (obj, field) => (obj && obj[field] ? obj[field] : null),
+        isSelected: (game, selectedGames) =>
+            selectedGames && selectedGames.includes(game),
     },
 });
 app.engine("handlebars", hbs.engine);

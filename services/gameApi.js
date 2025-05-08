@@ -1,4 +1,6 @@
 import axios from "axios";
+const MARVEL_API_KEY =
+    "e736f7a0f1fc493f8bb02974b557174a132040d729bd8ac77e449e783c6a01d4";
 
 const KEYS = {
     marvelRivals:
@@ -15,8 +17,7 @@ export async function getMarvelRivalsCharacters() {
             "https://marvelrivalsapi.com/api/v1/heroes",
             {
                 headers: {
-                    "x-api-key":
-                        e736f7a0f1fc493f8bb02974b557174a132040d729bd8ac77e449e783c6a01d4,
+                    "x-api-key": KEYS.marvelRivals,
                 },
             }
         );
