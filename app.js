@@ -38,10 +38,18 @@ const hbs = exphbs.create({
         isSelected: (game, selectedGames) =>
             selectedGames && selectedGames.includes(game),
         ifEquals: (a, b, options) => (a === b ? options.fn(this) : options.inverse(this)),
-    },
+        includes: (arr, value) => Array.isArray(arr) && arr.includes(value),
+        get: (obj, key) => obj?.[key],
+        charSelected: (charMap, game, character) =>
+            Array.isArray(charMap?.[game]) && charMap[game].includes(character),
+    }
 });
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
 
 // Routes
 configRoutes(app);

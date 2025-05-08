@@ -1,0 +1,85 @@
+<div class="profile-container">
+    <header class="profile-header">
+        <h1>{{user.username}}'s Profile</h1>
+        <div class="profile-actions">
+            <a href="/dashboard" class="btn btn-primary">← Back to Dashboard</a>
+            {{#if isOwner}}
+                <a href="/profile/edit" class="btn btn-secondary">Edit Profile</a>
+            {{/if}}
+        </div>
+    </header>
+
+    {{#if visible.bio}}
+    <section class="profile-section bio">
+        <h2>Bio</h2>
+        <p>{{user.bio}}</p>
+    </section>
+    {{/if}}
+
+    <section class="profile-section platforms">
+        <h2>Platforms</h2>
+        {{#if user.platforms.length}}
+            <ul>
+                {{#each user.platforms}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No platforms specified</p>
+        {{/if}}
+    </section>
+
+    {{#if visible.characters}}
+    <section class="profile-section games">
+        <h2>Favorite Games & Characters</h2>
+        {{#each user.selectedGames}}
+            <div class="game-block">
+                <h3>{{this}}</h3>
+                {{#if (lookup ../user.favoriteCharacters this)}}
+                    <ul class="character-list">
+                        {{#each (lookup ../user.favoriteCharacters this)}}
+                            <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                {{else}}
+                    <p>No favorite characters selected</p>
+                {{/if}}
+            </div>
+        {{/each}}
+    </section>
+    {{/if}}
+
+    {{#if visible.posts}}
+    <section class="profile-section posts">
+        <h2>Recent Posts</h2>
+        {{#if posts.length}}
+            <ul class="post-list">
+                {{#each posts}}
+                    <li>
+                        <a href="/posts/{{this._id}}">
+                            <strong>{{this.title}}</strong> ({{this.game}} - {{this.character}})
+                        </a>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No posts yet</p>
+        {{/if}}
+    </section>
+    {{/if}}
+
+    {{#if visible.achievements}}
+    <section class="profile-section achievements">
+        <h2>Achievements</h2>
+        {{#if user.achievements.length}}
+            <ul>
+                {{#each user.achievements}}
+                    <li><strong>{{this.name}}</strong> — Earned on {{this.earnedOn}}</li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No achievements unlocked</p>
+        {{/if}}
+    </section>
+    {{/if}}
+</div>

@@ -1,6 +1,9 @@
 <div class="dashboard-container">
+    <a href="/profile/{{user._id}}" class="view-profile-btn-fixed">View Profile</a>
     <header class="dashboard-header">
-        <h1>Welcome, {{user.username}}!</h1>
+        <div class="dashboard-header-top">
+            <h1>Welcome, {{user.username}}!</h1>
+        </div>
     </header>
 
     {{!-- Game Navigation Bar --}}

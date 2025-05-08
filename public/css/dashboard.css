@@ -1,4 +1,5 @@
 .dashboard-container {
+    position: relative;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -298,6 +299,24 @@
     color: #666;
 }
 
+.view-profile-btn-fixed {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: #0070f3;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    z-index: 1000;
+}
+
+.view-profile-btn-fixed:hover {
+    background-color: #0051b3;
+}
+
 @media (max-width: 768px) {
     .dashboard-header {
         flex-direction: column;
@@ -315,4 +334,6 @@
         font-size: 13px;
         padding: 6px 12px;
     }
+
 }
+

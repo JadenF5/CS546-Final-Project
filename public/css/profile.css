@@ -1,0 +1,27 @@
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.profile-section {
+    margin-bottom: 30px;
+}
+
+.character-list,
+.post-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.character-list li,
+.post-list li {
+    padding: 5px 0;
+}
