@@ -31,7 +31,6 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
         const postsCollection = await posts();
         const gamePosts = await postsCollection
             .find({ game: gameName })
-            // pinned threads first, then newest first
             .sort({ pinned: -1, timestamp: -1 })
             .toArray();
         let charactersWithImages = [];
@@ -81,6 +80,10 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
                 description: char.description,
             }));
         }
+        const gameData = {
+            ...game,
+            charactersWithImages: charactersWithImages,
+        };
 
         res.render("game", {
             title: game.name,
