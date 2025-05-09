@@ -79,12 +79,14 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
                 description: char.description,
             }));
         }
+        const gameData = {
+            ...game,
+            charactersWithImages: charactersWithImages,
+        };
+
         res.render("game", {
             title: game.name,
-            game: {
-                game,
-                charactersWithImages: charactersWithImages,
-            },
+            game: gameData,
             gamePosts,
             user,
             isFavorite,
