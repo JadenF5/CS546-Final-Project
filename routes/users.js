@@ -13,51 +13,6 @@ import {
 
 const router = express.Router();
 
-// GET: Edit profile
-router.get("/profile/edit", requireLogin, async (req, res) => {
-    try {
-        const userIdStr = req.session.user._id;
-
-        if (!ObjectId.isValid(userIdStr)) {
-            return res.status(400).render("error", {
-                title: "Invalid ID",
-                error: "Invalid user ID format provided.",
-            });
-        }
-
-        const userId = new ObjectId(userIdStr);
-        const userCollection = await users();
-        const user = await userCollection.findOne({ _id: userId });
-        if (!user) throw "User not found";
-
-        const allPlatforms = ["PC", "PlayStation", "Xbox", "Mobile"];
-        const gamesCollection = await games();
-        const allGames = await gamesCollection.find({}).toArray();
-
-        const privacyFields = [
-            { key: "profilePublic", label: "your profile" },
-            { key: "showBio", label: "your bio" },
-            { key: "showCharacters", label: "your characters" },
-            { key: "showPosts", label: "your posts" },
-            { key: "showAchievements", label: "your achievements" },
-        ];
-
-        res.render("editProfile", {
-            title: "Edit Your Profile",
-            user,
-            allPlatforms,
-            allGames,
-            privacyFields,
-        });
-    } catch (e) {
-        return res.status(500).render("error", {
-            title: "Error",
-            error: typeof e === "string" ? e : "Could not load profile editor.",
-        });
-    }
-});
-
-// GET: View a user's profile
 router.get("/profile/:id", async (req, res) => {
     try {
         const userId = req.params.id;
@@ -69,182 +24,181 @@ router.get("/profile/:id", async (req, res) => {
             });
         }
 
+        // Get user first
         const userCollection = await users();
-        const user = await userCollection.findOne({
-            _id: new ObjectId(userId),
-        });
-        if (!user) throw "User not found";
+        const user = await userCollection.findOne(
+            {
+                _id: new ObjectId(userId),
+            },
+            {
+                projection: {
+                    hashedPassword: 0, 
+                },
+            }
+        );
+
+        if (!user) {
+            return res.status(404).render("error", {
+                title: "Not Found",
+                error: "User not found.",
+            });
+        }
 
         const isOwner =
             req.session.user &&
             req.session.user._id.toString() === userId.toString();
         const privacy = user.privacySettings ?? {};
 
-        // Enforce privacy
         if (!isOwner && privacy.profilePublic === false) {
             return res.status(403).render("error", {
                 title: "Private Profile",
-                error: "This user’s profile is private.",
+                error: "This user's profile is private.",
             });
         }
-        const characterImages = {};
 
-        if (user.selectedGames && user.selectedGames.length > 0) {
-            const [
-                leagueChars,
-                valorantChars,
-                marvelChars,
-                tftChars,
-                overwatchChars,
-            ] = await Promise.all([
-                getLeagueCharacters(true),
-                getValorantAgents(true),
-                getMarvelRivalsCharacters(true),
-                getTFTChampions(true),
-                getOverwatch2Heroes(true),
-            ]);
-
-            const gameData = {
-                "League of Legends": leagueChars,
-                Valorant: valorantChars,
-                "Marvel Rivals": marvelChars,
-                "Teamfight Tactics": tftChars,
-                "Overwatch 2": overwatchChars,
-            };
-
-            for (const game of user.selectedGames) {
-                const gameCharacters = gameData[game] || [];
-
-                if (user.favoriteCharacters && user.favoriteCharacters[game]) {
-                    characterImages[game] = [];
-
-                    for (const charName of user.favoriteCharacters[game]) {
-                        const characterData = gameCharacters.find(
-                            (c) => c.name === charName
-                        );
-
-                        if (characterData) {
-                            characterImages[game].push({
-                                name: charName,
-                                role: characterData.role || "Unknown",
-                                imageUrl: characterData.imageUrl || "",
-                                description: characterData.description || "",
-                            });
-                        } else {
-                            characterImages[game].push({
-                                name: charName,
-                                role: "Unknown",
-                                imageUrl: "",
-                                description: `A character in ${game}`,
-                            });
-                        }
-                    }
-                }
-            }
-        }
         let userPosts = [];
         if (isOwner || privacy.showPosts) {
             const postsCollection = await posts();
-            userPosts = await postsCollection.find({ userId }).toArray();
+            userPosts = await postsCollection
+                .find({ userId })
+                .limit(10) 
+                .sort({ timestamp: -1 })
+                .toArray();
         }
 
-        res.render("profile", {
-            title: `${user.username}'s Profile`,
-            user,
-            isOwner,
-            posts: userPosts,
-            characterImages: characterImages,
-            visible: {
-                bio: isOwner || privacy.showBio,
-                characters: isOwner || privacy.showCharacters,
-                achievements: isOwner || privacy.showAchievements,
-                posts: isOwner || privacy.showPosts,
-            },
-        });
-    } catch (e) {
-        return res.status(500).render("error", {
-            title: "Error",
-            error: typeof e === "string" ? e : "Failed to load profile",
-        });
-    }
-});
+        const characterImages = {};
 
-// POST: Submit profile edits
-router.post("/profile/edit", requireLogin, async (req, res) => {
-    try {
-        const userIdStr = req.session.user._id;
-
-        if (!ObjectId.isValid(userIdStr)) {
-            return res.status(400).render("error", {
-                title: "Invalid ID",
-                error: "Invalid user ID format provided.",
+        if (
+            (!isOwner && !privacy.showCharacters) ||
+            !user.selectedGames ||
+            user.selectedGames.length === 0 ||
+            !user.favoriteCharacters ||
+            Object.keys(user.favoriteCharacters).length === 0
+        ) {
+            return res.render("profile", {
+                title: `${user.username}'s Profile`,
+                user,
+                isOwner,
+                posts: userPosts,
+                characterImages: characterImages,
+                visible: {
+                    bio: isOwner || privacy.showBio,
+                    characters: isOwner || privacy.showCharacters,
+                    achievements: isOwner || privacy.showAchievements,
+                    posts: isOwner || privacy.showPosts,
+                },
             });
         }
 
-        const userId = new ObjectId(userIdStr);
-        const userCollection = await users();
-        const user = await userCollection.findOne({ _id: userId });
-        if (!user) throw "User not found";
+        let gamesWithChars = user.selectedGames.filter(
+            (game) =>
+                user.favoriteCharacters[game] &&
+                user.favoriteCharacters[game].length > 0
+        );
 
-        const {
-            bio,
-            platforms,
-            selectedGames,
-            favoriteCharacters,
-            privacy_profilePublic,
-            privacy_showBio,
-            privacy_showCharacters,
-            privacy_showPosts,
-            privacy_showAchievements,
-        } = req.body;
-
-        const updates = {
-            bio: xss(bio ?? user.bio),
-            platforms: platforms
-                ? Array.isArray(platforms)
-                    ? platforms.map(xss)
-                    : [xss(platforms)]
-                : user.platforms ?? [],
-
-            selectedGames: selectedGames
-                ? Array.isArray(selectedGames)
-                    ? selectedGames.map(xss)
-                    : [xss(selectedGames)]
-                : user.selectedGames ?? [],
-
-            favoriteCharacters: {},
-            privacySettings: {
-                profilePublic: privacy_profilePublic === "true" || false,
-                showBio: privacy_showBio === "true" || false,
-                showCharacters: privacy_showCharacters === "true" || false,
-                showPosts: privacy_showPosts === "true" || false,
-                showAchievements: privacy_showAchievements === "true" || false,
-            },
-        };
-
-        // Parse favoriteCharacters (format: "Game:Character")
-        if (favoriteCharacters) {
-            const charEntries = Array.isArray(favoriteCharacters)
-                ? favoriteCharacters
-                : [favoriteCharacters];
-
-            for (const entry of charEntries) {
-                const [game, character] = entry.split(":");
-                if (!updates.favoriteCharacters[game]) {
-                    updates.favoriteCharacters[game] = [];
-                }
-                updates.favoriteCharacters[game].push(xss(character));
-            }
-        } else {
-            updates.favoriteCharacters = user.favoriteCharacters ?? {};
+        if (gamesWithChars.length === 0) {
+            return res.render("profile", {
+                title: `${user.username}'s Profile`,
+                user,
+                isOwner,
+                posts: userPosts,
+                characterImages: characterImages,
+                visible: {
+                    bio: isOwner || privacy.showBio,
+                    characters: isOwner || privacy.showCharacters,
+                    achievements: isOwner || privacy.showAchievements,
+                    posts: isOwner || privacy.showPosts,
+                },
+            });
         }
 
-        await userCollection.updateOne({ _id: userId }, { $set: updates });
-        res.redirect(`/profile/${userIdStr}`);
+        let processedGames = 0;
+
+        const processNextGame = async (index) => {
+            if (index >= gamesWithChars.length) {
+                return res.render("profile", {
+                    title: `${user.username}'s Profile`,
+                    user,
+                    isOwner,
+                    posts: userPosts,
+                    characterImages: characterImages,
+                    visible: {
+                        bio: isOwner || privacy.showBio,
+                        characters: isOwner || privacy.showCharacters,
+                        achievements: isOwner || privacy.showAchievements,
+                        posts: isOwner || privacy.showPosts,
+                    },
+                });
+            }
+
+            const game = gamesWithChars[index];
+
+            try {
+                let gameCharacters = [];
+
+                switch (game) {
+                    case "League of Legends":
+                        gameCharacters = await getLeagueCharacters(true);
+                        break;
+                    case "Valorant":
+                        gameCharacters = await getValorantAgents(true);
+                        break;
+                    case "Marvel Rivals":
+                        gameCharacters = await getMarvelRivalsCharacters(true);
+                        break;
+                    case "Teamfight Tactics":
+                        gameCharacters = await getTFTChampions(true);
+                        break;
+                    case "Overwatch 2":
+                        gameCharacters = await getOverwatch2Heroes(true);
+                        break;
+                    default:
+                        gameCharacters = [];
+                }
+
+                characterImages[game] = [];
+                for (const charName of user.favoriteCharacters[game]) {
+                    const characterData = gameCharacters.find(
+                        (c) => c.name === charName
+                    );
+
+                    if (characterData) {
+                        characterImages[game].push({
+                            name: charName,
+                            role: characterData.role || "Unknown",
+                            imageUrl: characterData.imageUrl || "",
+                            description: characterData.description || "",
+                        });
+                    } else {
+                        characterImages[game].push({
+                            name: charName,
+                            role: "Unknown",
+                            imageUrl: "",
+                            description: `A character in ${game}`,
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error(`Error fetching characters for ${game}:`, error);
+                characterImages[game] = user.favoriteCharacters[game].map(
+                    (charName) => ({
+                        name: charName,
+                        role: "Unknown",
+                        imageUrl: "",
+                        description: `A character in ${game}`,
+                    })
+                );
+            }
+
+            await processNextGame(index + 1);
+        };
+
+        await processNextGame(0);
     } catch (e) {
+        console.error("Profile loading error:", e);
         return res.status(500).render("error", {
-            title: "Update Failed",
-            error: typeof e === "string" ? e : "Could not update your profile.",
+            title: "Error",
+            error: typeof e === "string" ? e : "Failed to load profile",
         });
     }
 });
