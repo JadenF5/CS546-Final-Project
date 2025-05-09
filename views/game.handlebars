@@ -15,11 +15,11 @@
 
     <div class="game-actions">
         {{#if isFavorite}}
-            <button class="btn btn-secondary remove-favorite-game" data-game="{{game.name}}">
+            <button class="btn btn-secondary remove-favorite-game" data-game="{{game.game.name}}">
                 Remove from Favorites
             </button>
         {{else}}
-            <button class="btn btn-primary add-favorite-game" data-game="{{game.name}}">
+            <button class="btn btn-primary add-favorite-game" data-game="{{game.game.name}}">
                 Add to Favorites
             </button>
         {{/if}}
@@ -44,7 +44,7 @@
                     <div class="character-info">
                         <h3>{{this.name}}</h3>
                         <div class="character-role">{{this.role}}</div>
-                        <a href="/threads/{{../game.name}}/{{this.name}}" class="character-link">View Threads</a>
+                        <a href="/threads/{{@root.game.game.name}}/{{this.name}}" class="character-link">View Threads</a>
                     </div>
                 </div>
             {{/each}}
@@ -61,7 +61,7 @@
                     <div class="character-info">
                         <h3>{{this.name}}</h3>
                         <div class="character-role">{{this.role}}</div>
-                        <a href="/threads/{{../game.name}}/{{this.name}}" class="character-link">View Threads</a>
+                        <a href="/threads/{{@root.game.game.name}}/{{this.name}}" class="character-link">View Threads</a>
                     </div>
                 </div>
             {{/each}}
@@ -73,7 +73,7 @@
         <h2>Latest Threads</h2>
         
         <div class="threads-actions">
-            <a href="/posts/new?game={{game.name}}" class="btn btn-primary">Create New Thread</a>
+            <a href="/posts/new?game={{game.game.name}}" class="btn btn-primary">Create New Thread</a>
             <div class="thread-filters">
                 <select id="characterFilter">
                     <option value="">All Characters</option>

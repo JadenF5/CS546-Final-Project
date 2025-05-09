@@ -1,0 +1,25 @@
+<div class="back-link-container">
+    {{#if character}}
+        <a href="/threads/{{game}}/{{character}}" class="back-link">← Back to {{character}} Threads</a>
+    {{else}}
+        <a href="/games/{{game}}" class="back-link">← Back to {{game}} Page</a>
+    {{/if}}
+</div>
+
+
+
+<div class="new-post-form">
+    <h2>Create a New Thread {{#if character}}for {{character}}{{/if}} in {{game}}</h2>
+    <form method="POST" action="/posts/new">
+        <input type="hidden" name="game" value="{{game}}" />
+        <input type="hidden" name="character" value="{{character}}" />
+
+        <label for="title">Title</label>
+        <input name="title" id="title" type="text" required />
+
+        <label for="body">Body</label>
+        <textarea name="body" id="body" rows="6" required></textarea>
+
+        <button type="submit" class="btn btn-primary">Create Thread</button>
+    </form>
+</div>

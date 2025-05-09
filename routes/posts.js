@@ -1,18 +1,73 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { posts } from "../config/mongoCollections.js";
 import { requireLogin } from "../middleware/auth.js";
+import { posts } from "../config/mongoCollections.js";
+import * as postData from "../data/post.js";
 
 const router = express.Router();
 
-// GET: View a single post and its comments
+router.get("/posts/new", requireLogin, async (req, res) => {
+    const { game, character } = req.query;
+
+    if (!game) {
+        return res.status(400).render("error", { title: "Error", error: "Game is required." });
+    }
+
+    res.render("newPost", {
+        title: "Create New Thread",
+        game,
+        character: character || null,
+        user: req.session.user,
+    });
+});
+
+router.post("/posts/new", requireLogin, async (req, res) => {
+    const { title, body, game, character } = req.body;
+
+    if (!title || !body || !game) {
+        return res.status(400).render("error", {
+            title: "Error",
+            error: "Title, game, and body are required.",
+        });
+    }
+
+    try {
+        const postsCollection = await posts();
+        const newPost = {
+            userId: req.session.user._id,
+            username: req.session.user.username,
+            game,
+            character: character || null,
+            title,
+            body,
+            tags: [],
+            media: [],
+            likes: 0,
+            likedBy: [],
+            comments: [],
+            pinned: false,
+            timestamp: new Date().toISOString(),
+        };
+
+        const insertResult = await postsCollection.insertOne(newPost);
+        const postId = insertResult.insertedId;
+
+        if (character) {
+            return res.redirect(`/threads/${game}/${character}`);
+        } else {
+            return res.redirect(`/games/${game}`);
+        }
+    } catch (err) {
+        return res.status(500).render("error", {
+            title: "Error",
+            error: "Could not insert post.",
+        });
+    }
+});
+
 router.get("/posts/:postId", requireLogin, async (req, res) => {
     try {
-        const postId = req.params.postId;
-
-        const postsCollection = await posts();
-        const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
-
+        const post = await postData.getPostById(req.params.postId);
         if (!post) {
             return res.status(404).render("error", {
                 title: "Post Not Found",
@@ -25,7 +80,6 @@ router.get("/posts/:postId", requireLogin, async (req, res) => {
             post,
         });
     } catch (e) {
-        console.error("Error fetching post:", e);
         res.status(500).render("error", {
             title: "Error",
             error: "Failed to load post.",
@@ -33,17 +87,16 @@ router.get("/posts/:postId", requireLogin, async (req, res) => {
     }
 });
 
-// POST: Submit a reply to a post
 router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
     try {
-        const postId = req.params.postId;
         const commentText = req.body.comment?.trim();
-
         if (!commentText) {
-            return res.status(400).render("error", { title: "Error", error: "Comment cannot be empty." });
+            return res.status(400).render("error", {
+                title: "Error",
+                error: "Comment cannot be empty.",
+            });
         }
 
-        const postsCollection = await posts();
         const newComment = {
             _id: new ObjectId().toString(),
             userId: req.session.user._id,
@@ -52,18 +105,9 @@ router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
             timestamp: new Date().toISOString(),
         };
 
-        const updateResult = await postsCollection.updateOne(
-            { _id: new ObjectId(postId) },
-            { $push: { comments: newComment } }
-        );
-
-        if (updateResult.modifiedCount === 0) {
-            throw "Failed to add comment.";
-        }
-
-        res.redirect(`/posts/${postId}`);
+        await postData.addCommentToPost(req.params.postId, newComment);
+        res.redirect(`/posts/${req.params.postId}`);
     } catch (e) {
-        console.error("Error submitting reply:", e);
         res.status(500).render("error", {
             title: "Error",
             error: "Could not submit reply.",
@@ -71,5 +115,19 @@ router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
     }
 });
 
+router.post("/posts/:postId/like", requireLogin, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const userId = req.session.user._id;
+
+        await postData.toggleLike(postId, userId);
+        res.redirect(`/posts/${postId}`);
+    } catch (e) {
+        res.status(500).render("error", {
+            title: "Error",
+            error: "Failed to update like status.",
+        });
+    }
+});
 
 export default router;

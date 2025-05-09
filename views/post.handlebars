@@ -13,6 +13,16 @@
                 {{/each}}
             </p>
         {{/if}}
+
+        <form method="POST" action="/posts/{{post._id}}/like" class="like-form">
+            {{#if (includes post.likedBy user._id)}}
+                <button type="submit" class="btn btn-secondary">Unlike</button>
+            {{else}}
+                <button type="submit" class="btn btn-primary">Like</button>
+            {{/if}}
+            <span class="like-count">👍 {{post.likes}}</span>
+        </form>
+
     </div>
 
     <div class="comments-section">
