@@ -22,6 +22,13 @@
     {{#if threads.length}}
         {{#each threads}}
             <div class="thread-card">
+                <div class="thread-header">
+                    <h3>
+                        {{#if this.pinned}}
+                        <span class="pinned-label">📌 Pinned</span>
+                        {{/if}}
+                    </h3>
+                </div>
                 <h2><a href="/posts/{{this._id}}">{{this.title}}</a></h2>
                 <p>{{this.body}}</p>
                 <div class="meta">

@@ -143,3 +143,68 @@
 .back-button:hover {
     background-color: #5a6268;
 }
+
+.admin-actions {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.comment-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+}
+
+.comment-actions form {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.admin-actions form {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.icon-button {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-button:hover {
+    color: #c00;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.post-box,
+.comment-box {
+    position: relative;
+}
+
+.pinned-label {
+    font-size: 0.85rem;
+    color: #c00;
+    background-color: #fff3cd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+

@@ -2,7 +2,13 @@
     <a href="/threads/{{post.game}}/{{post.character}}" class="btn btn-secondary back-button">← Back to Threads</a>
 
     <div class="post-box">
-        <h1>{{post.title}}</h1>
+        <h1>
+            {{post.title}}
+            {{#if post.pinned}}
+                <span class="pinned-label">📌 Pinned</span>
+            {{/if}}
+        </h1>
+
         <p><strong>By:</strong> {{post.username}} | {{post.timestamp}}</p>
         <p>{{post.body}}</p>
 
@@ -14,6 +20,17 @@
             </p>
         {{/if}}
 
+        {{#ifEquals user.role "admin"}}
+            <div class="admin-actions">
+                <form method="POST" action="/posts/{{post._id}}/pin">
+                    <button type="submit" class="icon-button" title="Pin/Unpin">📌</button>
+                </form>
+                <form method="POST" action="/posts/{{post._id}}/delete" onsubmit="return confirm('Are you sure you want to delete this thread?');">
+                    <button type="submit" class="icon-button" title="Delete Post">🗑️</button>
+                </form>
+            </div>
+        {{/ifEquals}}
+
         <form method="POST" action="/posts/{{post._id}}/like" class="like-form">
             {{#if (includes post.likedBy user._id)}}
                 <button type="submit" class="btn btn-secondary">Unlike</button>
@@ -22,7 +39,6 @@
             {{/if}}
             <span class="like-count">👍 {{post.likes}}</span>
         </form>
-
     </div>
 
     <div class="comments-section">
@@ -32,6 +48,14 @@
             <ul class="comment-list">
                 {{#each post.comments}}
                     <li class="comment-box">
+                        {{#ifEquals ../user.role "admin"}}
+                            <div class="comment-actions">
+                                <form method="POST" action="/posts/{{../post._id}}/comments/{{this._id}}/delete" onsubmit="return confirm('Delete this comment?');">
+                                    <button type="submit" class="icon-button" title="Delete Comment">🗑️</button>
+                                </form>
+                            </div>
+                        {{/ifEquals}}
+
                         <strong>{{this.username}}</strong> <span class="comment-time">({{this.timestamp}})</span>
                         <p>{{this.comment}}</p>
                     </li>
@@ -44,9 +68,9 @@
 
     <div class="reply-section">
         <h3>Leave a Reply</h3>
-            <form method="POST" action="/posts/{{post._id}}/reply">
-                <textarea name="comment" rows="4" required placeholder="Write your comment here..."></textarea>
-                <button type="submit" class="btn btn-primary">Post Reply</button>
-            </form>
+        <form method="POST" action="/posts/{{post._id}}/reply">
+            <textarea name="comment" rows="4" required placeholder="Write your comment here..."></textarea>
+            <button type="submit" class="btn btn-primary">Post Reply</button>
+        </form>
     </div>
 </div>

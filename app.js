@@ -41,8 +41,11 @@ const hbs = exphbs.create({
         lookup: (obj, field) => (obj && obj[field] ? obj[field] : null),
         isSelected: (game, selectedGames) =>
             selectedGames && selectedGames.includes(game),
-        ifEquals: (a, b, options) => (a === b ? options.fn(this) : options.inverse(this)),
-        includes: (arr, value) => Array.isArray(arr) && arr.includes(value),
+        ifEquals: function(a, b, options) {
+            return a === b
+            ? options.fn(this)
+            : options.inverse(this);
+        },
         get: (obj, key) => obj?.[key],
         charSelected: (charMap, game, character) =>
             Array.isArray(charMap?.[game]) && charMap[game].includes(character),

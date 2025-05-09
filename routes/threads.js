@@ -22,13 +22,14 @@ router.get("/threads/:gameName/:characterName", requireLogin, async (req, res) =
         }
 
         // Build sorting logic
-        let sortCriteria;
+        let sortCriteria = { pinned: -1 };  // Pinned always appears first
         if (sortOption === "liked") {
-            sortCriteria = { likes: -1 };
+            sortCriteria.likes = -1;
+            sortCriteria.timestamp = -1;
         } else if (sortOption === "all") {
-            sortCriteria = { _id: 1 }; // chronological order (oldest first)
+            sortCriteria.timestamp = -1;
         } else {
-            sortCriteria = { timestamp: -1 }; // default: latest
+            sortCriteria.timestamp = -1;    // default: latest
         }
 
         const threads = await postsCollection

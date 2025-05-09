@@ -32,7 +32,8 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
         const postsCollection = await posts();
         const gamePosts = await postsCollection
             .find({ game: gameName })
-            .sort({ timestamp: -1 })
+            // pinned threads first, then newest first
+            .sort({ pinned: -1, timestamp: -1 })
             .toArray();
         let charactersWithImages = [];
         try {

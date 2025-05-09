@@ -99,6 +99,9 @@
                 {{#each gamePosts}}
                     <div class="thread-card" data-character="{{this.character}}">
                         <div class="thread-header">
+                            {{#if this.pinned}}
+                                <span class="pinned-label">📌 Pinned</span>
+                            {{/if}}
                             <h3><a href="/posts/{{this._id}}">{{this.title}}</a></h3>
                             <span class="thread-character">Character: {{this.character}}</span>
                         </div>

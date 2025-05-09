@@ -24,6 +24,15 @@
     box-sizing: border-box;
 }
 
+.new-post-form input[type="text"]#tags {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
 .new-post-form textarea {
     resize: vertical;
     min-height: 120px;

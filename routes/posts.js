@@ -24,7 +24,7 @@ router.get("/posts/new", requireLogin, async (req, res) => {
 });
 
 router.post("/posts/new", requireLogin, async (req, res) => {
-    const { title, body, game, character } = req.body;
+    const { title, body, game, character, tags } = req.body;
 
     if (!title || !body || !game) {
         return res.status(400).render("error", {
@@ -32,6 +32,13 @@ router.post("/posts/new", requireLogin, async (req, res) => {
             error: "Title, game, and body are required.",
         });
     }
+
+    const tagList = Array.isArray(tags)
+    ? tags
+    : tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
 
     try {
         const postsCollection = await posts();
@@ -44,7 +51,7 @@ router.post("/posts/new", requireLogin, async (req, res) => {
             character: character || null,
             title,
             body,
-            tags: [],
+            tags: tagList,
             media: [],
             likes: 0,
             likedBy: [],
@@ -77,6 +84,7 @@ router.post("/posts/new", requireLogin, async (req, res) => {
 router.get("/posts/:postId", requireLogin, async (req, res) => {
     try {
         const post = await postData.getPostById(req.params.postId);
+
         if (!post) {
             return res.status(404).render("error", {
                 title: "Post Not Found",
@@ -87,14 +95,17 @@ router.get("/posts/:postId", requireLogin, async (req, res) => {
         res.render("post", {
             title: post.title,
             post,
+            user: req.session.user,
         });
     } catch (e) {
+        console.error("❌ Error fetching post:", e);
         res.status(500).render("error", {
             title: "Error",
             error: "Failed to load post.",
         });
     }
 });
+
 
 router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
     try {
@@ -148,5 +159,57 @@ router.post("/posts/:postId/like", requireLogin, async (req, res) => {
         });
     }
 });
+
+// Pin/unpin a thread
+router.post("/posts/:postId/pin", requireLogin, async (req, res) => {
+    
+    if (req.session.user.role !== "admin") {
+        return res.status(403).render("error", { title: "Forbidden", error: "Admin access only." });
+    }
+
+    const postsCollection = await posts();
+    const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
+
+    if (!post) {
+        console.log("❌ Post not found");
+        return res.status(404).render("error", { title: "Not Found", error: "Post not found." });
+    }
+
+    console.log("✅ Post found:", post);
+    
+    await postsCollection.updateOne(
+        { _id: new ObjectId(req.params.postId) },
+        { $set: { pinned: !post.pinned } }
+    );
+
+    res.redirect(`/posts/${req.params.postId}`);
+});
+
+
+// Delete a thread
+router.post("/posts/:postId/delete", requireLogin, async (req, res) => {
+    if (req.session.user.role !== "admin") {
+        return res.status(403).render("error", { title: "Forbidden", error: "Admin access only." });
+    }
+
+    const postsCollection = await posts();
+    await postsCollection.deleteOne({ _id: new ObjectId(req.params.postId) });
+    res.redirect("/dashboard"); // Or redirect to /games/:game
+});
+
+// Delete a reply
+router.post("/posts/:postId/comments/:commentId/delete", requireLogin, async (req, res) => {
+    if (req.session.user.role !== "admin") {
+        return res.status(403).render("error", { title: "Forbidden", error: "Admin access only." });
+    }
+
+    const postsCollection = await posts();
+    await postsCollection.updateOne(
+        { _id: new ObjectId(req.params.postId) },
+        { $pull: { comments: { _id: req.params.commentId } } }
+    );
+    res.redirect(`/posts/${req.params.postId}`);
+});
+
 
 export default router;

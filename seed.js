@@ -575,6 +575,7 @@ async function seedPosts(usersList, gameData) {
                 },
             ],
             timestamp: new Date().toISOString(),
+            pinned: false,
         });
 
         if (lolChars.length > 1) {
@@ -614,6 +615,7 @@ async function seedPosts(usersList, gameData) {
                 },
             ],
             timestamp: new Date().toISOString(),
+            pinned: false,
         });
     }
 
@@ -643,6 +645,7 @@ async function seedPosts(usersList, gameData) {
                 },
             ],
             timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+            pinned: false,
         });
     }
 
@@ -685,6 +688,7 @@ async function seedPosts(usersList, gameData) {
             likes: 10,
             comments: [],
             timestamp: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
+            pinned: false,
         });
     }
 
