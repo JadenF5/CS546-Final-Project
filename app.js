@@ -7,6 +7,7 @@ import { requireLogin, redirectIfLoggedIn } from "./middleware/auth.js";
 import { dbConnection } from "./config/mongoConnection.js";
 import configRoutes from "./routes/index.js";
 import handlebars from "handlebars";
+import { checkLoyalMember } from "./middleware/achievements.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,6 +29,9 @@ app.use(
         saveUninitialized: false,
     })
 );
+
+// Middleware for achievements
+app.use(checkLoyalMember);
 
 // Register handlebars with helper
 const hbs = exphbs.create({

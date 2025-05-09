@@ -3,6 +3,8 @@ import { ObjectId } from "mongodb";
 import { requireLogin } from "../middleware/auth.js";
 import { posts } from "../config/mongoCollections.js";
 import * as postData from "../data/post.js";
+import { users } from "../config/mongoCollections.js";
+import { awardAchievement } from "../helpers/achievements.js";
 
 const router = express.Router();
 
@@ -33,8 +35,10 @@ router.post("/posts/new", requireLogin, async (req, res) => {
 
     try {
         const postsCollection = await posts();
+        const userCollection = await users();
+        const userId = new ObjectId(req.session.user._id);
         const newPost = {
-            userId: req.session.user._id,
+            userId,
             username: req.session.user.username,
             game,
             character: character || null,
@@ -50,6 +54,11 @@ router.post("/posts/new", requireLogin, async (req, res) => {
         };
 
         const insertResult = await postsCollection.insertOne(newPost);
+        const userPostCount = await postsCollection.countDocuments({ userId });
+        await awardAchievement(userId, "First Post!", userCollection);
+        if (userPostCount >= 10) {
+            await awardAchievement(userId, "Clip Professional", userCollection);
+        }
         const postId = insertResult.insertedId;
 
         if (character) {
@@ -121,6 +130,16 @@ router.post("/posts/:postId/like", requireLogin, async (req, res) => {
         const userId = req.session.user._id;
 
         await postData.toggleLike(postId, userId);
+        const postsCollection = await posts();
+        const usersCollection = await users();
+
+        const userPosts = await postsCollection.find({ userId }).toArray();
+        const totalLikes = userPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+
+        if (totalLikes >= 50) {
+            await awardAchievement(userId, "Famous", usersCollection);
+        }
+
         res.redirect(`/posts/${postId}`);
     } catch (e) {
         res.status(500).render("error", {
