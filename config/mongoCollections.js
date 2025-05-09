@@ -17,5 +17,5 @@ export const users = getCollectionFn("users");
 export const posts = getCollectionFn("posts");
 export const games = getCollectionFn("games");
 export const teammates = getCollectionFn("teammates");
-export const achievementDefinitions = async () => await getCollection("achievementDefinitions");
+export const achievementDefinitions = getCollectionFn("achievementDefinitions");
 

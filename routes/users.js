@@ -13,6 +13,134 @@ import {
 
 const router = express.Router();
 
+router.get("/profile/edit", requireLogin, async (req, res) => {
+    try {
+        const userIdStr = req.session.user._id;
+
+        if (!ObjectId.isValid(userIdStr)) {
+            return res.status(400).render("error", {
+                title: "Invalid ID",
+                error: "Invalid user ID format provided."
+            });
+        }
+
+        const userId = new ObjectId(userIdStr);
+        const userCollection = await users();
+        const user = await userCollection.findOne({ _id: userId });
+
+        if (!user) {
+            return res.status(404).render("error", {
+                title: "User Not Found",
+                error: "We couldn't find your user account."
+            });
+        }
+
+        const gamesCollection = await games();
+        const allGames = await gamesCollection.find({}).toArray();
+        const allPlatforms = ["PC", "PlayStation", "Xbox", "Mobile"];
+
+        const privacyFields = [
+            { key: "profilePublic", label: "your profile" },
+            { key: "showBio", label: "your bio" },
+            { key: "showCharacters", label: "your characters" },
+            { key: "showPosts", label: "your posts" },
+            { key: "showAchievements", label: "your achievements" }
+        ];
+
+        res.render("editProfile", {
+            title: "Edit Your Profile",
+            user,
+            allGames,
+            allPlatforms,
+            privacyFields
+        });
+    } catch (e) {
+        return res.status(500).render("error", {
+            title: "Error",
+            error: typeof e === "string" ? e : "Could not load profile editor."
+        });
+    }
+});
+
+router.post("/profile/edit", requireLogin, async (req, res) => {
+    try {
+        const userIdStr = req.session.user._id;
+
+        if (!ObjectId.isValid(userIdStr)) {
+            return res.status(400).render("error", {
+                title: "Invalid ID",
+                error: "Invalid user ID format provided."
+            });
+        }
+
+        const userId = new ObjectId(userIdStr);
+        const userCollection = await users();
+        const user = await userCollection.findOne({ _id: userId });
+        if (!user) throw "User not found";
+
+        const {
+            bio,
+            platforms,
+            selectedGames,
+            favoriteCharacters,
+            privacy_profilePublic,
+            privacy_showBio,
+            privacy_showCharacters,
+            privacy_showPosts,
+            privacy_showAchievements
+        } = req.body;
+
+        const updates = {
+            bio: xss(bio ?? user.bio),
+            platforms: platforms
+                ? Array.isArray(platforms)
+                    ? platforms.map(xss)
+                    : [xss(platforms)]
+                : user.platforms ?? [],
+
+            selectedGames: selectedGames
+                ? Array.isArray(selectedGames)
+                    ? selectedGames.map(xss)
+                    : [xss(selectedGames)]
+                : user.selectedGames ?? [],
+
+            favoriteCharacters: {},
+            privacySettings: {
+                profilePublic: privacy_profilePublic === "true" || false,
+                showBio: privacy_showBio === "true" || false,
+                showCharacters: privacy_showCharacters === "true" || false,
+                showPosts: privacy_showPosts === "true" || false,
+                showAchievements: privacy_showAchievements === "true" || false
+            }
+        };
+
+        // Parse favoriteCharacters (format: "Game:Character")
+        if (favoriteCharacters) {
+            const charEntries = Array.isArray(favoriteCharacters)
+                ? favoriteCharacters
+                : [favoriteCharacters];
+
+            for (const entry of charEntries) {
+                const [game, character] = entry.split(":");
+                if (!updates.favoriteCharacters[game]) {
+                    updates.favoriteCharacters[game] = [];
+                }
+                updates.favoriteCharacters[game].push(xss(character));
+            }
+        } else {
+            updates.favoriteCharacters = user.favoriteCharacters ?? {};
+        }
+
+        await userCollection.updateOne({ _id: userId }, { $set: updates });
+        res.redirect(`/profile/${userIdStr}`);
+    } catch (e) {
+        return res.status(500).render("error", {
+            title: "Update Failed",
+            error: typeof e === "string" ? e : "Could not update your profile."
+        });
+    }
+});
+
 router.get("/profile/:id", async (req, res) => {
     try {
         const userId = req.params.id;
