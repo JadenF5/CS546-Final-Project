@@ -26,8 +26,7 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
         }
 
         const user = req.session.user;
-        const isFavorite =
-            user.selectedGames && user.selectedGames.includes(gameName);
+        const isFavorite = user.selectedGames?.includes(gameName);
 
         const postsCollection = await posts();
         const gamePosts = await postsCollection
@@ -36,43 +35,45 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
             .sort({ pinned: -1, timestamp: -1 })
             .toArray();
         let charactersWithImages = [];
-        try {
-            switch (gameName) {
-                case "League of Legends":
-                    charactersWithImages = await getLeagueCharacters(
-                        true
-                    ).catch((e) => []);
-                    break;
-                case "Valorant":
-                    charactersWithImages = await getValorantAgents(true).catch(
-                        (e) => []
-                    );
-                    break;
-                case "Marvel Rivals":
-                    charactersWithImages = await getMarvelRivalsCharacters(
-                        true
-                    ).catch((e) => []);
-                    break;
-                case "Teamfight Tactics":
-                    charactersWithImages = await getTFTChampions(true).catch(
-                        (e) => []
-                    );
-                    break;
-                case "Overwatch 2":
-                    charactersWithImages = await getOverwatch2Heroes(
-                        true
-                    ).catch((e) => []);
-                    break;
-                default:
-                    charactersWithImages = game.characters.map((char) => ({
-                        name: char.name,
-                        role: char.role,
-                        imageUrl: "",
-                        description: char.description,
-                    }));
+
+        if (["League of Legends", "Valorant", "Marvel Rivals", "Teamfight Tactics", "Overwatch 2"].includes(gameName)) {
+            const dbCharacters = game.characters;
+            let apiCharacters = [];
+
+            try {
+                switch (gameName) {
+                    case "League of Legends":
+                        apiCharacters = await getLeagueCharacters(true);
+                        break;
+                    case "Valorant":
+                        apiCharacters = await getValorantAgents(true);
+                        break;
+                    case "Marvel Rivals":
+                        apiCharacters = await getMarvelRivalsCharacters(true);
+                        break;
+                    case "Teamfight Tactics":
+                        apiCharacters = await getTFTChampions(true);
+                        break;
+                    case "Overwatch 2":
+                        apiCharacters = await getOverwatch2Heroes(true);
+                        break;
+                }
+            } catch (e) {
+                console.warn(`API fallback for ${gameName}:`, e);
             }
-        } catch (e) {
-            console.error(`Error fetching ${gameName} character images:`, e);
+
+            charactersWithImages = dbCharacters.map((char) => {
+                const match = apiCharacters.find(
+                    (apiChar) => apiChar.name.toLowerCase() === char.name.toLowerCase()
+                );
+                return {
+                    name: char.name,
+                    role: char.role,
+                    imageUrl: match?.imageUrl || "",
+                    description: char.description,
+                };
+            });
+        } else {
             charactersWithImages = game.characters.map((char) => ({
                 name: char.name,
                 role: char.role,
@@ -80,14 +81,10 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
                 description: char.description,
             }));
         }
-        const gameData = {
-            ...game,
-            charactersWithImages: charactersWithImages,
-        };
 
         res.render("game", {
             title: game.name,
-            game: gameData,
+            game: { ...game, charactersWithImages },
             gamePosts,
             user,
             isFavorite,

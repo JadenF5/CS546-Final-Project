@@ -50,6 +50,7 @@ const hbs = exphbs.create({
         charSelected: (charMap, game, character) =>
             Array.isArray(charMap?.[game]) && charMap[game].includes(character),
         includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
+        join: (arr, sep) => Array.isArray(arr) ? arr.join(sep) : arr
     }
 });
 app.engine("handlebars", hbs.engine);

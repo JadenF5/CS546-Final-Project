@@ -1,0 +1,35 @@
+<h1>Edit Game: {{game.name}}</h1>
+
+<form action="/admin/games/{{game._id}}/edit" method="POST">
+    <label for="name">Game Name:</label>
+    <input type="text" id="name" name="name" value="{{game.name}}" required>
+
+    <label for="genre">Genre:</label>
+    <input type="text" id="genre" name="genre" value="{{game.genre}}" required>
+
+    <label>Platforms:</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" name="platforms" value="PC" {{#if (includes game.platforms "PC")}}checked{{/if}}> PC</label>
+        <label><input type="checkbox" name="platforms" value="PlayStation" {{#if (includes game.platforms "PlayStation")}}checked{{/if}}> PlayStation</label>
+        <label><input type="checkbox" name="platforms" value="Xbox" {{#if (includes game.platforms "Xbox")}}checked{{/if}}> Xbox</label>
+        <label><input type="checkbox" name="platforms" value="Mobile" {{#if (includes game.platforms "Mobile")}}checked{{/if}}> Mobile</label>
+    </div>
+
+    <h3>Edit Characters</h3>
+    {{#each game.characters}}
+    <div class="character-block">
+        <label>Name:</label>
+        <input type="text" name="characterNames" value="{{this.name}}" required>
+        <label>Role:</label>
+        <input type="text" name="characterRoles" value="{{this.role}}">
+        <label>Image:</label>
+        <input type="text" name="characterImages" value="{{this.image}}">
+        <label>Description:</label>
+        <textarea name="characterDescriptions">{{this.description}}</textarea>
+        <hr>
+    </div>
+    {{/each}}
+
+    <button type="submit">Save Changes</button>
+    <a href="/admin" class="btn btn-secondary">Cancel</a>
+</form>

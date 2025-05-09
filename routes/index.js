@@ -5,6 +5,7 @@ import gamesRouter from "./games.js";
 import threadsRouter from "./threads.js"
 import postsRouter from './posts.js';
 import achievementRoutes from "./achievements.js";
+import adminRoutes from './admin.js';
 
 const router = express.Router();
 import userRoutes from './users.js';
@@ -22,4 +23,5 @@ export default (app) => {
     app.use("/", postsRouter);
     app.use('/', userRoutes);
     app.use("/", achievementRoutes);
+    app.use("/", adminRoutes);
 };

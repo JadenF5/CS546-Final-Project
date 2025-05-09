@@ -1,0 +1,36 @@
+<h1 class="mb-4">Manage Games</h1>
+
+<div class="text-end mb-3">
+    <a href="/dashboard" class="btn btn-secondary me-2">← Back to Dashboard</a>
+    <a href="/admin/games/new" class="btn btn-primary">Add New Game</a>
+</div>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Genre</th>
+            <th>Platforms</th>
+            <th>Characters</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each games}}
+        <tr>
+            <td><strong>{{this.name}}</strong></td>
+            <td>{{this.genre}}</td>
+            <td>{{join this.platforms ", "}}</td>
+            <td>{{this.characters.length}}</td>
+            <td>
+                <div class="action-buttons">
+                    <a href="/admin/games/{{this._id}}/edit" class="btn btn-secondary btn-sm">Edit</a>
+                    <form action="/admin/games/{{this._id}}/delete" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
