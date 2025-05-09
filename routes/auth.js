@@ -22,6 +22,7 @@ router
             const tftChars = await getTFTChampions();
             const marvelChars = await getMarvelRivalsCharacters();
             const valorantChars = await getValorantAgents();
+            const overwatchChars = await getOverwatch2Heroes();
 
             const tftCharNames = tftChars.map((champ) => champ.name);
 
@@ -30,6 +31,7 @@ router
                 "Teamfight Tactics": tftCharNames,
                 "Marvel Rivals": marvelChars,
                 Valorant: valorantChars,
+                "Overwatch 2": overwatchChars.map((h) => h.name),
             };
 
             const tftTraits = {};
