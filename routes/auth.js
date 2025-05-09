@@ -6,7 +6,7 @@ import {
     getTFTChampions,
     getMarvelRivalsCharacters,
     getValorantAgents,
-    getOverwatch2Heroes
+    getOverwatch2Heroes,
 } from "../services/gameApi.js";
 
 const router = express.Router();
@@ -18,18 +18,33 @@ router
 
         try {
             // Fetch characters for all games
+            const leagueChars = await getLeagueCharacters();
+            const tftChars = await getTFTChampions();
+            const marvelChars = await getMarvelRivalsCharacters();
+            const valorantChars = await getValorantAgents();
+
+            const tftCharNames = tftChars.map((champ) => champ.name);
+
             const characters = {
-                "League of Legends": await getLeagueCharacters(),
-                "Teamfight Tactics": await getTFTChampions(),
-                "Marvel Rivals": await getMarvelRivalsCharacters(),
-                "Valorant": await getValorantAgents(),
-                "Overwatch 2": (await getOverwatch2Heroes()).map(h => h.name), 
+                "League of Legends": leagueChars,
+                "Teamfight Tactics": tftCharNames,
+                "Marvel Rivals": marvelChars,
+                Valorant: valorantChars,
             };
 
-            // Pass characters data to the template
+            const tftTraits = {};
+            tftChars.forEach((champ) => {
+                if (champ.traits && champ.traits.length > 0) {
+                    tftTraits[champ.name] = champ.traits[0];
+                } else {
+                    tftTraits[champ.name] = "Unknown";
+                }
+            });
+
             res.render("signup", {
                 title: "Sign Up",
                 allGameCharacters: characters,
+                tftTraits: tftTraits,
             });
         } catch (e) {
             console.error("Error fetching game characters:", e);
@@ -85,7 +100,7 @@ router
                 "Teamfight Tactics": await getTFTChampions(),
                 "Marvel Rivals": await getMarvelRivalsCharacters(),
                 Valorant: await getValorantAgents(),
-                "Overwatch 2": (await getOverwatch2Heroes()).map(h => h.name), 
+                "Overwatch 2": (await getOverwatch2Heroes()).map((h) => h.name),
             };
 
             // Render form with error
@@ -145,7 +160,7 @@ router.get("/api/characters", async (req, res) => {
                 return res.json({ characters: await getTFTChampions() });
             case "Overwatch 2":
                 const owHeroes = await getOverwatch2Heroes();
-                return res.json({ characters: owHeroes.map(h => h.name) });
+                return res.json({ characters: owHeroes.map((h) => h.name) });
             default:
                 return res.json({ characters: [] });
         }

@@ -26,24 +26,47 @@
     </div>
 
     <section class="game-characters-section">
-        <h2>Characters</h2>
-        
-        <div class="character-filter">
-            <input type="text" id="characterSearch" placeholder="Search characters...">
-        </div>
-        
-        <div class="characters-grid">
-            {{#each game.characters}}
+    <h2>Characters</h2>
+    <div class="character-filter">
+        <input type="text" id="characterSearch" placeholder="Search characters...">
+    </div>
+    <div class="characters-grid">
+        {{#if game.charactersWithImages}}
+            {{#each game.charactersWithImages}}
                 <div class="character-card" data-character="{{this.name}}">
+                    <div class="character-image">
+                        {{#if this.imageUrl}}
+                            <img src="{{this.imageUrl}}" alt="{{this.name}}" loading="lazy">
+                        {{else}}
+                            <div class="character-placeholder" data-name="{{this.name}}"></div>
+                        {{/if}}
+                    </div>
                     <div class="character-info">
                         <h3>{{this.name}}</h3>
-                        <p>Role: {{this.role}}</p>
-                        
-                        <a href="/threads/{{../game.name}}/{{this.name}}" class="btn btn-small btn-primary">View Threads</a>
+                        <div class="character-role">{{this.role}}</div>
+                        <a href="/threads/{{../game.name}}/{{this.name}}" class="character-link">View Threads</a>
                     </div>
                 </div>
             {{/each}}
-        </div>
+        {{else}}
+            {{#each game.characters}}
+                <div class="character-card" data-character="{{this.name}}">
+                    <div class="character-image">
+                        {{#if this.imageUrl}}
+                        <img src="{{this.imageUrl}}" alt="{{this.name}}" loading="lazy">
+                        {{else}}
+                        <div class="character-placeholder" data-name="{{this.name}}"></div>
+                        {{/if}}
+                    </div>
+                    <div class="character-info">
+                        <h3>{{this.name}}</h3>
+                        <div class="character-role">{{this.role}}</div>
+                        <a href="/threads/{{../game.name}}/{{this.name}}" class="character-link">View Threads</a>
+                    </div>
+                </div>
+            {{/each}}
+        {{/if}}
+    </div>
     </section>
     
     <section class="game-threads-section">
@@ -54,9 +77,15 @@
             <div class="thread-filters">
                 <select id="characterFilter">
                     <option value="">All Characters</option>
-                    {{#each game.characters}}
-                        <option value="{{this.name}}">{{this.name}}</option>
-                    {{/each}}
+                    {{#if game.charactersWithImages}}
+                        {{#each game.charactersWithImages}}
+                            <option value="{{this.name}}">{{this.name}}</option>
+                        {{/each}}
+                    {{else}}
+                        {{#each game.characters}}
+                            <option value="{{this.name}}">{{this.name}}</option>
+                        {{/each}}
+                    {{/if}}
                 </select>
                 <select id="threadSort">
                     <option value="latest">Latest</option>

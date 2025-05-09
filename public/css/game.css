@@ -94,12 +94,63 @@
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+.character-image {
+    width: 100%;
+    height: 160px;
+    background-color: #f0f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
 
+.character-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    padding: 5px;
+}
+.character-placeholder {
+    width: 60px;
+    height: 60px;
+    background-color: #0070f3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
 .character-info h3 {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 18px;
     color: #333;
+}
+
+.character-role {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.character-link {
+    display: inline-block;
+    margin-top: auto;
+    padding: 5px 10px;
+    background-color: #f0f7ff;
+    color: #0070f3;
+    border-radius: 4px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+.character-link:hover {
+    background-color: #e1f0ff;
 }
 
 .character-info p {
@@ -180,7 +231,6 @@
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    /* Allow text to overflow with ellipsis */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -250,6 +300,14 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .game-page-header {
+        flex-direction: column;
+    }
+
+    .game-actions {
+        margin-top: 15px;
+        align-self: stretch;
+    }
     .characters-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
@@ -266,5 +324,27 @@
 
     .thread-filters select {
         flex: 1;
+    }
+}
+@media (max-width: 480px) {
+    .characters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .character-image {
+        height: 120px;
+    }
+
+    .character-info h3 {
+        font-size: 14px;
+    }
+
+    .character-role {
+        font-size: 12px;
+    }
+
+    .character-link {
+        font-size: 12px;
+        padding: 4px 8px;
     }
 }

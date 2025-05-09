@@ -10,78 +10,138 @@ const KEYS = {
     valorant: "RGAPI-773f057b-1396-4f54-8caa-226120a13e12",
 };
 
-// Marvel Rivals (mock example)
-export async function getMarvelRivalsCharacters() {
-    try {
-        const res = await axios.get(
-            "https://marvelrivalsapi.com/api/v1/heroes",
-            {
-                headers: {
-                    "x-api-key": KEYS.marvelRivals,
-                },
-            }
-        );
+// Marvel Rivals
+export async function getMarvelRivalsCharacters(includeDetails = false) {
+    const res = await axios.get("https://marvelrivalsapi.com/api/v1/heroes", {
+        headers: {
+            "x-api-key": KEYS.marvelRivals,
+        },
+    });
 
-        // Return just hero names for dropdown
+    if (includeDetails) {
+        return res.data.map((hero) => ({
+            name: hero.name,
+            role: hero.role || hero.class || "Unknown",
+            imageUrl: `https://marvelrivalsapi.com${hero.imageUrl}`,
+            description: hero.description || `A hero in Marvel Rivals`,
+        }));
+    } else {
         return res.data.map((hero) => hero.name);
-    } catch (e) {
-        console.error("Marvel Rivals API failed. Using fallback.", e.message);
-        return ["Iron Man", "Doctor Strange", "Storm", "Magneto", "Star-Lord"];
     }
 }
 
 // League of Legends
-export async function getLeagueCharacters() {
-    const url = `https://ddragon.leagueoflegends.com/cdn/14.9.1/data/en_US/champion.json`;
+export async function getLeagueCharacters(includeDetails = false) {
+    const version = "14.9.1";
+    const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`;
     const { data } = await axios.get(url);
-    return Object.values(data.data).map((champ) => champ.name);
+
+    if (includeDetails) {
+        return Object.values(data.data).map((champ) => ({
+            name: champ.name,
+            role: champ.tags[0] || "Unknown",
+            imageUrl: `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champ.image.full}`,
+            description: champ.blurb,
+        }));
+    } else {
+        return Object.values(data.data).map((champ) => champ.name);
+    }
 }
 
 // Teamfight Tactics
-export async function getTFTChampions() {
-    try {
-        const version = "13.24.1"; // Use latest version, or fetch dynamically
-        const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/tft-champion.json`;
+export async function getTFTChampions(includeDetails = false) {
+    const version = "13.24.1";
+    const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/tft-champion.json`;
 
-        const res = await axios.get(url);
-        const data = res.data.data;
+    const res = await axios.get(url);
+    const data = res.data.data;
 
-        return Object.values(data).map((champ) => champ.name);
-    } catch (e) {
-        console.error("TFT champion fetch failed. Using fallback.", e.message);
-        return ["Aatrox", "Ahri", "Jinx", "Irelia", "Yasuo"];
+    if (includeDetails) {
+        return Object.values(data).map((champ) => {
+            let role = "TFT Champion";
+            if (
+                champ.traits &&
+                Array.isArray(champ.traits) &&
+                champ.traits.length > 0
+            ) {
+                role = champ.traits[0];
+            }
+            let imageUrl = "";
+            if (champ.image && champ.image.full) {
+                imageUrl = `https://ddragon.leagueoflegends.com/cdn/${version}/img/tft-champion/${champ.image.full}`;
+            }
+
+            return {
+                name: champ.name,
+                role: role,
+                imageUrl: imageUrl,
+                description:
+                    champ.ability?.desc || `A champion in Teamfight Tactics`,
+            };
+        });
+    } else {
+        return Object.values(data).map((champ) => {
+            const championData = {
+                name: champ.name,
+                traits: ["TFT Champion"],
+            };
+
+            if (
+                champ.traits &&
+                Array.isArray(champ.traits) &&
+                champ.traits.length > 0
+            ) {
+                championData.traits = champ.traits;
+            }
+
+            return championData;
+        });
     }
 }
 
 // Valorant
-export async function getValorantAgents() {
+export async function getValorantAgents(includeDetails = false) {
     const url = `https://valorant-api.com/v1/agents`;
     const { data } = await axios.get(url);
-    return data.data
-        .filter((agent) => agent.isPlayableCharacter)
-        .map((agent) => agent.displayName);
-}
+    const agents = data.data.filter((agent) => agent.isPlayableCharacter);
 
+    if (includeDetails) {
+        return agents.map((agent) => ({
+            name: agent.displayName,
+            role: agent.role?.displayName || "Unknown",
+            imageUrl:
+                agent.displayIcon ||
+                agent.fullPortrait ||
+                agent.killfeedPortrait,
+            description: agent.description,
+        }));
+    } else {
+        return agents.map((agent) => agent.displayName);
+    }
+}
 
 // Overwatch 2 - using OverFast API
-export async function getOverwatch2Heroes() {
-try {
+export async function getOverwatch2Heroes(includeDetails = false) {
     const res = await axios.get("https://overfast-api.tekrop.fr/heroes", {
         params: {
-            locale: "en-us"
-        }
+            locale: "en-us",
+        },
     });
-    return res.data.map((hero) => ({
-        name: hero.name,
-        key: hero.key,
-        role: hero.role,
-        portrait: hero.portrait
-    }));
-} catch (e) {
-    console.error("Failed to fetch Overwatch 2 heroes.", e.message);
-    return [
-        { name: "Tracer", key: "tracer", role: "damage", portrait: "" },
-        { name: "Reinhardt", key: "reinhardt", role: "tank", portrait: "" }
-    ];
-}
+
+    if (includeDetails) {
+        return res.data.map((hero) => ({
+            name: hero.name,
+            role: hero.role,
+            imageUrl: hero.portrait,
+            description:
+                hero.description || `An ${hero.role} hero in Overwatch 2`,
+        }));
+    } else {
+        return res.data.map((hero) => ({
+            name: hero.name,
+            key: hero.key,
+            role: hero.role,
+            portrait: hero.portrait,
+        }));
+    }
 }

@@ -1,27 +1,365 @@
+/* Enhanced profile.css - keeps your existing structure */
+
 .profile-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 25px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
 }
 
+/* Profile header */
 .profile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
 }
 
+.profile-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333;
+    position: relative;
+}
+
+.profile-header h1::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: #0070f3;
+    border-radius: 3px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #0070f3;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0051b3;
+}
+
+.btn-secondary {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e5e5;
+}
+
+/* Profile sections */
 .profile-section {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s;
 }
 
-.character-list,
+.profile-section:hover {
+    transform: translateY(-2px);
+}
+
+.profile-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    color: #333;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+/* Bio section */
+.bio p {
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Platforms section */
+.platforms ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.platforms li {
+    display: flex;
+    align-items: center;
+    padding: 6px 14px;
+    background-color: #f0f7ff;
+    border-radius: 6px;
+    color: #0070f3;
+    font-weight: 500;
+}
+
+.platforms li::before {
+    content: "•";
+    margin-right: 6px;
+    color: #0070f3;
+    font-weight: bold;
+}
+
+/* Games and characters */
+.games-block {
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeaea;
+    transition: all 0.2s;
+}
+
+.games-block:hover {
+    border-color: #0070f3;
+}
+
+.games h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.character-list {
+    list-style: none;
+    padding-left: 15px;
+    margin: 10px 0;
+}
+
+.character-list li {
+    padding: 5px 0;
+    position: relative;
+}
+
+.character-list li::before {
+    content: "•";
+    color: #0070f3;
+    font-weight: bold;
+    position: absolute;
+    left: -15px;
+}
+
+/* Posts section */
 .post-list {
     list-style: none;
-    padding-left: 0;
+    padding: 0;
+    margin: 0;
 }
 
-.character-list li,
 .post-list li {
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.15s;
+    border-left: 3px solid #0070f3;
+}
+
+.post-list li:hover {
+    transform: translateX(5px);
+}
+
+.post-list a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.post-list strong {
+    display: block;
+    margin-bottom: 3px;
+}
+
+/* Achievements section */
+.achievements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.achievements li {
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+}
+
+.achievements strong {
+    margin-right: 8px;
+    color: #0070f3;
+}
+
+/* Empty state styling */
+.profile-section p:only-child {
+    color: #777;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .profile-actions {
+        width: 100%;
+    }
+
+    .btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.character-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.character-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.character-image {
+    width: 100%;
+    height: 100px;
+    background-color: #f0f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.character-image img {
+    width: 100%;
+    height: 100%;
+    object-position: center top;
+}
+
+.character-placeholder {
+    width: 50px;
+    height: 50px;
+    background-color: #0070f3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.character-info {
+    padding: 10px;
+}
+
+.character-info h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.character-role {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Maintain the existing character list style for fallback */
+.character-list {
+    list-style: none;
+    padding-left: 15px;
+    margin: 10px 0;
+}
+
+.character-list li {
     padding: 5px 0;
+    position: relative;
+}
+
+.character-list li::before {
+    content: "•";
+    color: #0070f3;
+    font-weight: bold;
+    position: absolute;
+    left: -15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .character-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .character-image {
+        height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .character-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+
+    .character-info h4 {
+        font-size: 12px;
+    }
+
+    .character-role {
+        font-size: 10px;
+    }
 }

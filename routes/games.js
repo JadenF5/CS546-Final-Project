@@ -2,6 +2,13 @@ import express from "express";
 import { ObjectId } from "mongodb";
 import { requireLogin } from "../middleware/auth.js";
 import { games, posts, users } from "../config/mongoCollections.js";
+import {
+    getLeagueCharacters,
+    getValorantAgents,
+    getMarvelRivalsCharacters,
+    getTFTChampions,
+    getOverwatch2Heroes,
+} from "../services/gameApi.js";
 
 const router = express.Router();
 
@@ -27,10 +34,57 @@ router.get("/games/:gameName", requireLogin, async (req, res) => {
             .find({ game: gameName })
             .sort({ timestamp: -1 })
             .toArray();
-
+        let charactersWithImages = [];
+        try {
+            switch (gameName) {
+                case "League of Legends":
+                    charactersWithImages = await getLeagueCharacters(
+                        true
+                    ).catch((e) => []);
+                    break;
+                case "Valorant":
+                    charactersWithImages = await getValorantAgents(true).catch(
+                        (e) => []
+                    );
+                    break;
+                case "Marvel Rivals":
+                    charactersWithImages = await getMarvelRivalsCharacters(
+                        true
+                    ).catch((e) => []);
+                    break;
+                case "Teamfight Tactics":
+                    charactersWithImages = await getTFTChampions(true).catch(
+                        (e) => []
+                    );
+                    break;
+                case "Overwatch 2":
+                    charactersWithImages = await getOverwatch2Heroes(
+                        true
+                    ).catch((e) => []);
+                    break;
+                default:
+                    charactersWithImages = game.characters.map((char) => ({
+                        name: char.name,
+                        role: char.role,
+                        imageUrl: "",
+                        description: char.description,
+                    }));
+            }
+        } catch (e) {
+            console.error(`Error fetching ${gameName} character images:`, e);
+            charactersWithImages = game.characters.map((char) => ({
+                name: char.name,
+                role: char.role,
+                imageUrl: "",
+                description: char.description,
+            }));
+        }
         res.render("game", {
             title: game.name,
-            game,
+            game: {
+                game,
+                charactersWithImages: charactersWithImages,
+            },
             gamePosts,
             user,
             isFavorite,

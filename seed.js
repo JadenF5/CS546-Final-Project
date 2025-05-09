@@ -221,9 +221,7 @@ async function fetchCharacterDetails(game) {
                     characters = response.data.map((hero) => ({
                         name: hero.name,
                         role: hero.role || hero.class || "Unknown",
-                        image: `${hero.name
-                            .toLowerCase()
-                            .replace(/\s+/g, "")}.png`,
+                        image: `https://marvelrivalsapi.com${hero.imageUrl}`,
                         description:
                             hero.description || `A hero in Marvel Rivals`,
                     }));
@@ -390,7 +388,13 @@ async function seedGames() {
         {
             name: "Overwatch 2",
             genre: "Hero Shooter",
-            platforms: ["Battlenet", "PC", "PlayStation", "Xbox", "Nintendo Switch"],
+            platforms: [
+                "Battlenet",
+                "PC",
+                "PlayStation",
+                "Xbox",
+                "Nintendo Switch",
+            ],
             characters: [],
         },
     ];
@@ -450,7 +454,7 @@ async function seedUsers() {
                 {
                     name: "First Post!",
                     earnedOn: new Date().toISOString().split("T")[0],
-                }
+                },
             ],
             createdAt: new Date().toISOString(),
         },
@@ -461,12 +465,17 @@ async function seedUsers() {
             role: "user",
             bio: "Avid gamer who loves MOBAs and FPS games",
             platforms: ["PC"],
-            selectedGames: ["League of Legends", "Valorant", "Marvel Rivals", "Overwatch 2"],
+            selectedGames: [
+                "League of Legends",
+                "Valorant",
+                "Marvel Rivals",
+                "Overwatch 2",
+            ],
             favoriteCharacters: {
                 "League of Legends": ["Ezreal", "Lux"],
                 Valorant: ["Jett"],
                 "Marvel Rivals": ["Iron Man", "Doctor Strange"],
-                "Overwatch 2": ["Tracer", "Mercy"]
+                "Overwatch 2": ["Tracer", "Mercy"],
             },
             friends: [],
             privacySettings: {
@@ -484,7 +493,7 @@ async function seedUsers() {
                 {
                     name: "First Post!",
                     earnedOn: new Date().toISOString().split("T")[0],
-                }
+                },
             ],
             createdAt: new Date().toISOString(),
         },
@@ -542,7 +551,7 @@ async function seedPosts(usersList, gameData) {
 
     // Create posts for League of Legends
     const lolChars =
-    gameData.find((g) => g.name === "League of Legends")?.characters || [];
+        gameData.find((g) => g.name === "League of Legends")?.characters || [];
 
     if (lolChars.length > 0) {
         // Use some actual characters from the fetched data
@@ -608,11 +617,11 @@ async function seedPosts(usersList, gameData) {
         });
     }
 
-     // Create posts for Valorant
-     const valorantChars =
-     gameData.find((g) => g.name === "Valorant")?.characters || [];
+    // Create posts for Valorant
+    const valorantChars =
+        gameData.find((g) => g.name === "Valorant")?.characters || [];
 
-     if (valorantChars.length > 0) {
+    if (valorantChars.length > 0) {
         postData.push({
             userId: user1._id.toString(),
             username: user1.username,

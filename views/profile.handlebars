@@ -12,7 +12,7 @@
     {{#if visible.bio}}
     <section class="profile-section bio">
         <h2>Bio</h2>
-        <p>{{user.bio}}</p>
+        <p>{{#if user.bio}}{{user.bio}}{{else}}<em>No bio provided</em>{{/if}}</p>
     </section>
     {{/if}}
 
@@ -32,20 +32,44 @@
     {{#if visible.characters}}
     <section class="profile-section games">
         <h2>Favorite Games & Characters</h2>
+        {{#if user.selectedGames.length}}
         {{#each user.selectedGames}}
-            <div class="game-block">
+            <div class="games-block">
                 <h3>{{this}}</h3>
-                {{#if (lookup ../user.favoriteCharacters this)}}
-                    <ul class="character-list">
-                        {{#each (lookup ../user.favoriteCharacters this)}}
-                            <li>{{this}}</li>
-                        {{/each}}
-                    </ul>
-                {{else}}
-                    <p>No favorite characters selected</p>
-                {{/if}}
+                {{#if (lookup ../characterImages this)}}
+                <div class="character-grid">
+        {{#each (lookup ../characterImages this)}}
+            <div class="character-card">
+                <div class="character-image">
+                    {{#if this.imageUrl}}
+                        <img src="{{this.imageUrl}}" alt="{{this.name}}" loading="lazy">
+                    {{else}}
+                        <div class="character-placeholder" data-name="{{this.name}}"></div>
+                    {{/if}}
+                </div>
+                <div class="character-info">
+                    <h4>{{this.name}}</h4>
+                    <div class="character-role">{{this.role}}</div>
+                </div>
             </div>
         {{/each}}
+    </div>
+    {{else}}
+        {{#if (lookup ../user.favoriteCharacters this)}}
+            <ul class="character-list">
+                {{#each (lookup ../user.favoriteCharacters this)}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No favorite characters selected</p>
+        {{/if}}
+    {{/if}}
+            </div>
+        {{/each}}
+        {{else}}
+        <p>No favorite games selected</p>
+        {{/if}}
     </section>
     {{/if}}
 
@@ -83,3 +107,4 @@
     </section>
     {{/if}}
 </div>
+<script src="/public/js/profile.js"></script>

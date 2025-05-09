@@ -3,6 +3,13 @@ import { ObjectId } from "mongodb";
 import { users, posts, games } from "../config/mongoCollections.js";
 import { requireLogin } from "../middleware/auth.js";
 import xss from "xss";
+import {
+    getLeagueCharacters,
+    getValorantAgents,
+    getMarvelRivalsCharacters,
+    getTFTChampions,
+    getOverwatch2Heroes,
+} from "../services/gameApi.js";
 
 const router = express.Router();
 
@@ -14,7 +21,7 @@ router.get("/profile/edit", requireLogin, async (req, res) => {
         if (!ObjectId.isValid(userIdStr)) {
             return res.status(400).render("error", {
                 title: "Invalid ID",
-                error: "Invalid user ID format provided."
+                error: "Invalid user ID format provided.",
             });
         }
 
@@ -32,7 +39,7 @@ router.get("/profile/edit", requireLogin, async (req, res) => {
             { key: "showBio", label: "your bio" },
             { key: "showCharacters", label: "your characters" },
             { key: "showPosts", label: "your posts" },
-            { key: "showAchievements", label: "your achievements" }
+            { key: "showAchievements", label: "your achievements" },
         ];
 
         res.render("editProfile", {
@@ -40,12 +47,12 @@ router.get("/profile/edit", requireLogin, async (req, res) => {
             user,
             allPlatforms,
             allGames,
-            privacyFields
+            privacyFields,
         });
     } catch (e) {
         return res.status(500).render("error", {
             title: "Error",
-            error: typeof e === "string" ? e : "Could not load profile editor."
+            error: typeof e === "string" ? e : "Could not load profile editor.",
         });
     }
 });
@@ -58,15 +65,19 @@ router.get("/profile/:id", async (req, res) => {
             console.error("Invalid ObjectId passed to /profile/:id:", userId);
             return res.status(400).render("error", {
                 title: "Invalid ID",
-                error: "Invalid user ID format provided."
+                error: "Invalid user ID format provided.",
             });
         }
 
         const userCollection = await users();
-        const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+        const user = await userCollection.findOne({
+            _id: new ObjectId(userId),
+        });
         if (!user) throw "User not found";
 
-        const isOwner = req.session.user && req.session.user._id === userId;
+        const isOwner =
+            req.session.user &&
+            req.session.user._id.toString() === userId.toString();
         const privacy = user.privacySettings ?? {};
 
         // Enforce privacy
@@ -76,7 +87,61 @@ router.get("/profile/:id", async (req, res) => {
                 error: "This user’s profile is private.",
             });
         }
+        const characterImages = {};
 
+        if (user.selectedGames && user.selectedGames.length > 0) {
+            const [
+                leagueChars,
+                valorantChars,
+                marvelChars,
+                tftChars,
+                overwatchChars,
+            ] = await Promise.all([
+                getLeagueCharacters(true),
+                getValorantAgents(true),
+                getMarvelRivalsCharacters(true),
+                getTFTChampions(true),
+                getOverwatch2Heroes(true),
+            ]);
+
+            const gameData = {
+                "League of Legends": leagueChars,
+                Valorant: valorantChars,
+                "Marvel Rivals": marvelChars,
+                "Teamfight Tactics": tftChars,
+                "Overwatch 2": overwatchChars,
+            };
+
+            for (const game of user.selectedGames) {
+                const gameCharacters = gameData[game] || [];
+
+                if (user.favoriteCharacters && user.favoriteCharacters[game]) {
+                    characterImages[game] = [];
+
+                    for (const charName of user.favoriteCharacters[game]) {
+                        const characterData = gameCharacters.find(
+                            (c) => c.name === charName
+                        );
+
+                        if (characterData) {
+                            characterImages[game].push({
+                                name: charName,
+                                role: characterData.role || "Unknown",
+                                imageUrl: characterData.imageUrl || "",
+                                description: characterData.description || "",
+                            });
+                        } else {
+                            characterImages[game].push({
+                                name: charName,
+                                role: "Unknown",
+                                imageUrl: "",
+                                description: `A character in ${game}`,
+                            });
+                        }
+                    }
+                }
+            }
+        }
         let userPosts = [];
         if (isOwner || privacy.showPosts) {
             const postsCollection = await posts();
@@ -88,6 +153,7 @@ router.get("/profile/:id", async (req, res) => {
             user,
             isOwner,
             posts: userPosts,
+            characterImages: characterImages,
             visible: {
                 bio: isOwner || privacy.showBio,
                 characters: isOwner || privacy.showCharacters,
@@ -103,7 +169,6 @@ router.get("/profile/:id", async (req, res) => {
     }
 });
 
-
 // POST: Submit profile edits
 router.post("/profile/edit", requireLogin, async (req, res) => {
     try {
@@ -112,7 +177,7 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
         if (!ObjectId.isValid(userIdStr)) {
             return res.status(400).render("error", {
                 title: "Invalid ID",
-                error: "Invalid user ID format provided."
+                error: "Invalid user ID format provided.",
             });
         }
 
@@ -130,7 +195,7 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
             privacy_showBio,
             privacy_showCharacters,
             privacy_showPosts,
-            privacy_showAchievements
+            privacy_showAchievements,
         } = req.body;
 
         const updates = {
@@ -153,8 +218,8 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
                 showBio: privacy_showBio === "true" || false,
                 showCharacters: privacy_showCharacters === "true" || false,
                 showPosts: privacy_showPosts === "true" || false,
-                showAchievements: privacy_showAchievements === "true" || false
-            }
+                showAchievements: privacy_showAchievements === "true" || false,
+            },
         };
 
         // Parse favoriteCharacters (format: "Game:Character")
@@ -179,10 +244,9 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
     } catch (e) {
         return res.status(500).render("error", {
             title: "Update Failed",
-            error: typeof e === "string" ? e : "Could not update your profile."
+            error: typeof e === "string" ? e : "Could not update your profile.",
         });
     }
 });
-
 
 export default router;
