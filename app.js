@@ -9,6 +9,8 @@ import configRoutes from "./routes/index.js";
 import handlebars from "handlebars";
 import { checkLoyalMember } from "./middleware/achievements.js";
 import gameData from "./data/game.js";
+import notificationRoutes from "./routes/notifications.js";
+import friendRoutes from "./routes/friends.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,8 +61,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/friends', friendRoutes);
+app.use("/notifications", notificationRoutes);
+
 // Routes
 configRoutes(app);
+
 
 async function startServer() {
     try {

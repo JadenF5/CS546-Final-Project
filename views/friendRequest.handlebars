@@ -1,0 +1,16 @@
+<h1>Send a Friend Request</h1>
+
+<form action="/friends/request" method="POST">
+  <label for="toUsername">Username:</label><br>
+  <input type="text" id="toUsername" name="toUsername" required /><br><br>
+  <button type="submit">Send Friend Request</button>
+  <a href="/dashboard" class="dashboard-btn">Return to Dashboard</a>
+</form>
+
+{{#if error}}
+  <p style="color:red">{{error}}</p>
+{{/if}}
+
+{{#if success}}
+  <p style="color:green">Friend request sent!</p>
+{{/if}}

@@ -336,4 +336,28 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
     }
 });
 
+
+router.get("/find", requireLogin, async (req, res) => {
+    const userId = req.session.user._id;
+    const userCollection = await users();
+    const currentUser = await userCollection.findOne({ _id: new ObjectId(userId) });
+  
+    const allUsers = await userCollection
+      .find({ _id: { $ne: new ObjectId(userId) } })
+      .project({ _id: 1, username: 1 })
+      .toArray();
+  
+    // Remove users already in friend list
+    const filtered = allUsers.filter(
+      u => !currentUser.friends.includes(u._id.toString())
+    );
+  
+    res.render("findFriends", {
+      title: "Find Friends",
+      users: filtered
+    });
+  });
+  
+  
+
 export default router;

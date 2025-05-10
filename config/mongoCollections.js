@@ -18,4 +18,5 @@ export const posts = getCollectionFn("posts");
 export const games = getCollectionFn("games");
 export const teammates = getCollectionFn("teammates");
 export const achievementDefinitions = getCollectionFn("achievementDefinitions");
+export const notifications = getCollectionFn("notifications");
 
