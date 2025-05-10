@@ -255,12 +255,20 @@
     color: #777;
     margin-bottom: 15px;
 }
+.game-card.small .btn,
+.friend-card .btn {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .btn {
-    display: block;
+    display: flex;
     width: 100%;
     padding: 10px;
-    text-align: center;
+    justify-content: center;
+    align-items: center;
     border-radius: 4px;
     text-decoration: none;
     font-weight: bold;
@@ -268,6 +276,8 @@
     transition: background-color 0.2s, color 0.2s;
     border: none;
     cursor: pointer;
+    height: 40px;
+    box-sizing: border-box;
 }
 
 .btn-primary {
@@ -322,25 +332,54 @@
     top: 20px;
     right: 30px;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     z-index: 1000;
 }
 
 .dashboard-btn {
     background-color: #0070f3;
     color: white;
-    padding: 8px 14px;
+    padding: 8px 16px;
     border-radius: 5px;
     font-weight: bold;
     text-decoration: none;
     transition: background-color 0.2s ease;
     white-space: nowrap;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
 }
 
 .dashboard-btn:hover {
     background-color: #0051b3;
 }
+.dashboard-btn.secondary {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
 
+.dashboard-btn.secondary:hover {
+    background-color: #e5e5e5;
+}
+.admin-settings-btn {
+    background-color: #f5f5f5;
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.admin-settings-btn:hover {
+    background-color: #e5e5e5;
+}
 @media (max-width: 768px) {
     .dashboard-header {
         flex-direction: column;
@@ -361,14 +400,16 @@
 
     .dashboard-header-actions {
         position: static;
-        flex-direction: column;
-        margin-bottom: 15px;
-    }
-
-    .dashboard-btn {
+        display: flex;
         width: 100%;
-        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        gap: 10px;
     }
 
+    .dashboard-btn,
+    .admin-settings-btn {
+        flex: 1;
+        min-width: 0;
+    }
 }
-

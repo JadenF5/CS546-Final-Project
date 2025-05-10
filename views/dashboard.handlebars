@@ -1,7 +1,7 @@
 <div class="dashboard-container">
     <div class="dashboard-header-actions">
         {{#ifEquals user.role "admin"}}
-        <a href="/admin" class="btn btn-secondary">Admin Settings</a>
+        <a href="/admin" class="admin-settings-btn">Admin Settings</a>
         {{/ifEquals}}
         <a href="/achievements" class="dashboard-btn">Achievements</a>
         <a href="/profile/{{user._id}}" class="dashboard-btn">View Profile</a>

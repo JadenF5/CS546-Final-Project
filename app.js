@@ -8,6 +8,7 @@ import { dbConnection } from "./config/mongoConnection.js";
 import configRoutes from "./routes/index.js";
 import handlebars from "handlebars";
 import { checkLoyalMember } from "./middleware/achievements.js";
+import gameData from "./data/game.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,17 +42,15 @@ const hbs = exphbs.create({
         lookup: (obj, field) => (obj && obj[field] ? obj[field] : null),
         isSelected: (game, selectedGames) =>
             selectedGames && selectedGames.includes(game),
-        ifEquals: function(a, b, options) {
-            return a === b
-            ? options.fn(this)
-            : options.inverse(this);
+        ifEquals: function (a, b, options) {
+            return a === b ? options.fn(this) : options.inverse(this);
         },
         get: (obj, key) => obj?.[key],
         charSelected: (charMap, game, character) =>
             Array.isArray(charMap?.[game]) && charMap[game].includes(character),
         includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
-        join: (arr, sep) => Array.isArray(arr) ? arr.join(sep) : arr
-    }
+        join: (arr, sep) => (Array.isArray(arr) ? arr.join(sep) : arr),
+    },
 });
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
@@ -63,13 +62,17 @@ app.use((req, res, next) => {
 // Routes
 configRoutes(app);
 
-// Mongo connection and server start
-dbConnection()
-    .then(() => {
+async function startServer() {
+    try {
+        const db = await dbConnection();
+        await gameData.initializeGames();
+
         app.listen(port, () => {
             console.log(`Server running on http://localhost:3000`);
         });
-    })
-    .catch((e) => {
-        console.error("Failed to connect to MongoDB:", e);
-    });
+    } catch (e) {
+        console.error("Failed to connect to MongoDB or initialize games:", e);
+    }
+}
+
+startServer();
