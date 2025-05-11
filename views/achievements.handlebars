@@ -3,7 +3,7 @@
 
     {{#each allAchievements}}
         <div class="achievement-card {{#if (includes ../userAchievements this.name)}}unlocked{{else}}locked{{/if}}">
-            <h2>{{this.name}}</h2>
+            <h2>{{this.emoji}} {{this.name}}</h2>
             <p>{{this.description}}</p>
             <span class="badge-status">
                 {{#if (includes ../userAchievements this.name)}}

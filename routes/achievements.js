@@ -2,16 +2,10 @@ import express from "express";
 import { users } from "../config/mongoCollections.js";
 import { requireLogin } from "../middleware/auth.js";
 import { ObjectId } from "mongodb";
+import { achievementCatalog } from "../helpers/achievements.js";
 
 const router = express.Router();
-
-const achievementCatalog = [
-    { name: "First Sign Up!", description: "You registered your account." },
-    { name: "First Post!", description: "You made your first post." },
-    { name: "Clip Professional", description: "Posted 10 threads." },
-    { name: "Famous", description: "Received 50 likes across posts." },
-    { name: "Loyal Member", description: "Been active for 30 days." }
-];
+  
 
 router.get("/achievements", requireLogin, async (req, res) => {
     const userIdStr = req.session.user._id;

@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { users, posts, games } from "../config/mongoCollections.js";
 import { requireLogin } from "../middleware/auth.js";
 import xss from "xss";
+import { achievementCatalog } from "../helpers/achievements.js";
 import {
     getLeagueCharacters,
     getValorantAgents,
@@ -81,6 +82,11 @@ router.get("/profile/:id", async (req, res) => {
             }
         );
 
+        const achievementEmojis = {};
+            for (const a of achievementCatalog) {
+                achievementEmojis[a.name] = { emoji: a.emoji };
+            }
+
         if (!user) {
             return res.status(404).render("error", {
                 title: "Not Found",
@@ -131,6 +137,7 @@ router.get("/profile/:id", async (req, res) => {
                     achievements: isOwner || privacy.showAchievements,
                     posts: isOwner || privacy.showPosts,
                 },
+                achievementEmojis
             });
         }
 
@@ -153,6 +160,7 @@ router.get("/profile/:id", async (req, res) => {
                     achievements: isOwner || privacy.showAchievements,
                     posts: isOwner || privacy.showPosts,
                 },
+                achievementEmojis
             });
         }
 
@@ -172,6 +180,7 @@ router.get("/profile/:id", async (req, res) => {
                         achievements: isOwner || privacy.showAchievements,
                         posts: isOwner || privacy.showPosts,
                     },
+                    achievementEmojis
                 });
             }
 

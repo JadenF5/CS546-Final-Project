@@ -95,15 +95,19 @@
     {{#if visible.achievements}}
     <section class="profile-section achievements">
         <h2>Achievements</h2>
-        {{#if user.achievements.length}}
-            <ul>
-                {{#each user.achievements}}
-                    <li><strong>{{this.name}}</strong> — Earned on {{this.earnedOn}}</li>
-                {{/each}}
-            </ul>
-        {{else}}
-            <p>No achievements unlocked</p>
-        {{/if}}
+            {{#if user.achievements.length}}
+                <ul>
+                    {{#each user.achievements}}
+                        <li>
+                            <strong>
+                                {{lookup (lookup ../achievementEmojis this.name) "emoji"}} {{this.name}}
+                            </strong> — Earned on {{this.earnedOn}}
+                        </li>
+                    {{/each}}
+                </ul>
+            {{else}}
+                <p>No achievements unlocked</p>
+            {{/if}}
     </section>
     {{/if}}
 </div>

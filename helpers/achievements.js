@@ -17,3 +17,12 @@ export async function awardAchievement(userId, name, usersCollection) {
         );
     }
 }
+
+export const achievementCatalog = [
+    { name: "First Sign Up!", emoji: "❤️", description: "You registered your account." },
+    { name: "First Post!", emoji: "💬", description: "You made your first post." },
+    { name: "Clip Professional", emoji: "🎬", description: "Posted 10 threads." },
+    { name: "Famous", emoji: "🌟", description: "Received 50 likes across posts." },
+    { name: "Loyal Member", emoji: "📅", description: "Been active for 30 days." }
+  ];
+  
