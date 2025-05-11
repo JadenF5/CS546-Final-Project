@@ -1,7 +1,7 @@
 <div class="post-view">
     <div class="back-button-container">
         {{#if post.character}}
-            <a href="/threads/{{post.game}}/{{post.character}}" class="btn btn-secondary back-button">
+            <a href="/threads/{{encodeURIComponent post.game}}/{{encodeURIComponent post.character}}" class="btn btn-secondary back-button">
             ← Back to {{post.character}} Threads
             </a>
         {{else}}

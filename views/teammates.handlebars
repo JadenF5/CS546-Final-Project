@@ -18,11 +18,11 @@
 
         {{#if isOwner}}
       <form method="POST" action="/teammates/delete" style="margin-top: 10px;">
-        <input type="hidden" name="postId" value="{{_id}}" />
+        <input type="hidden" name="postId" value="{{_id}}">
         <button type="submit" class="dashboard-btn danger">Delete</button>
       </form>
     {{/if}}
-    <hr/>
+    <hr>
   </div>
 {{/each}}
 

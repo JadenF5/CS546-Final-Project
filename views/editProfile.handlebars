@@ -36,8 +36,8 @@
             <label>Favorite Characters (per game)</label>
             {{#each allGames}}
                 <div class="character-group">
-                    <label for="fc-{{this.name}}">{{this.name}}</label>
-                    <select multiple name="favoriteCharacters" id="fc-{{this.name}}">
+                    <label for="fc-{{safeId this.name}}">{{this.name}}</label>
+                    <select multiple name="favoriteCharacters" id="fc-{{safeId this.name}}">
                         {{#each this.characters}}
                             <option value="{{../this.name}}:{{this.name}}"
                                 {{#if (charSelected ../../user.favoriteCharacters ../this.name this.name)}}selected{{/if}}>

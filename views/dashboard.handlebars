@@ -55,7 +55,7 @@
         <h2>Game Forums</h2>
         <nav class="game-tabs">
             {{#each allGames}}
-                <a href="/games/{{this.name}}" class="game-tab {{#if (isSelected this.name ../user.selectedGames)}}selected{{/if}}">
+                <a href="/games/{{encodeURIComponent this.name}}" class="game-tab {{#if (isSelected this.name ../user.selectedGames)}}selected{{/if}}">
                     {{this.name}}
                 </a>
             {{/each}}
@@ -115,7 +115,7 @@
                             {{/if}}
                         </div>
                         
-                        <a href="/games/{{this.name}}" class="btn btn-primary">View All Threads</a>
+                        <a href="/games/{{encodeURIComponent this.name}}" class="btn btn-primary">View All Threads</a>
                     </div>
                 {{/each}}
             </div>
@@ -167,7 +167,7 @@
                 <div class="game-card small">
                     <h3>{{this.name}}</h3>
                     <p>{{this.genre}}</p>
-                    <a href="/games/{{this.name}}" class="btn btn-secondary">Explore</a>
+                    <a href="/games/{{encodeURIComponent this.name}}" class="btn btn-secondary">Explore</a>
                 </div>
             {{/each}}
         </div>

@@ -44,7 +44,7 @@
                     <div class="character-info">
                         <h3>{{this.name}}</h3>
                         <div class="character-role">{{this.role}}</div>
-                        <a href="/threads/{{@root.game.name}}/{{this.name}}" class="character-link">View Threads</a>
+                        <a href="/threads/{{encodeURIComponent @root.game.name}}/{{encodeURIComponent this.name}}" class="character-link">View Threads</a>
                     </div>
                 </div>
             {{/each}}
@@ -61,7 +61,7 @@
                     <div class="character-info">
                         <h3>{{this.name}}</h3>
                         <div class="character-role">{{this.role}}</div>
-                        <a href="/threads/{{@root.game.name}}/{{this.name}}" class="character-link">View Threads</a>
+                        <a href="/threads/{{encodeURIComponent @root.game.name}}/{{encodeURIComponent this.name}}" class="character-link">View Threads</a>
                     </div>
                 </div>
             {{/each}}
@@ -73,7 +73,7 @@
         <h2>Latest Threads</h2>
         
         <div class="threads-actions">
-            <a href="/posts/new?game={{game.name}}" class="btn btn-primary">Create New Thread</a>
+            <a href="/posts/new?game={{encodeURIComponent game.name}}" class="btn btn-primary">Create New Thread</a>
             <div class="thread-filters">
                 <select id="characterFilter">
                     <option value="">All Characters</option>
@@ -128,7 +128,7 @@
             {{else}}
                 <div class="empty-state">
                     <p>No threads found for this game.</p>
-                    <a href="/posts/new?game={{game.name}}" class="btn btn-secondary">Create the First Thread</a>
+                    <a href="/posts/new?game={{encodeURIComponent game.name}}" class="btn btn-secondary">Create the First Thread</a>
                 </div>
             {{/if}}
         </div>

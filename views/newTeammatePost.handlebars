@@ -1,40 +1,78 @@
 <h1>Create LFT Post</h1>
 <form action="/teammates/new" method="POST">
-  <label>Game:
-    <select name="game" required>
-      <option>Valorant</option>
-      <option>League of Legends</option>
-      <option>Overwatch 2</option>
-      <option>Teamfight Tactics</option>
-      <option>Marvel Rivals</option>
+  <label for="gameSelect">Game:
+    <select name="game" id="gameSelect" required>
+      <option value="" disabled selected>Select a game</option>
+      <option value="Valorant">Valorant</option>
+      <option value="League of Legends">League of Legends</option>
+      <option value="Overwatch 2">Overwatch 2</option>
+      <option value="Teamfight Tactics">Teamfight Tactics</option>
+      <option value="Marvel Rivals">Marvel Rivals</option>
     </select>
   </label>
 
-  <label>Preferred Roles:
-    <select name="preferences" multiple>
-      <option>Duelist</option>
-      <option>Initiator</option>
-      <option>Controller</option>
-      <option>Sentinel</option>
-    </select>
-  </label>
+  <div id="roles-container" style="display: none;">
+    <label>Preferred Roles:</label>
+    <div id="role-wrapper"></div>
+  </div>
 
   <label>Region:
     <select name="region" required>
-      <option>NA</option>
-      <option>EU</option>
-      <option>ASIA</option>
-      <option>OC</option>
+      <option value="" disabled selected>Select a region</option>
+      <option value="NA">NA</option>
+      <option value="EU">EU</option>
+      <option value="ASIA">ASIA</option>
+      <option value="OC">OC</option>
     </select>
   </label>
 
-  <label>Rank: <input type="text" name="rank" /></label>
-  <label>Platform: <input type="text" name="platform" /></label>
-  <label>Availability: <input type="text" name="availability" /></label>
+  <label>Rank: <input type="text" name="rank"></label>
+  <label>Platform: <input type="text" name="platform"></label>
+  <label>Availability: <input type="text" name="availability"></label>
   <label>Message:
     <textarea name="message" required></textarea>
   </label>
 
   <button type="submit">Post</button>
 </form>
+
 <a href="/dashboard" class="dashboard-btn">Return to Dashboard</a>
+
+<script>
+  const gameRoles = {
+    "Valorant": ["Duelist", "Initiator", "Controller", "Sentinel"],
+    "Overwatch 2": ["Tank", "Damage", "Support"],
+    "League of Legends": ["Top", "Mid", "Jungle", "ADC", "Support"],
+    "Teamfight Tactics": ["Flexible", "Reroll", "Slow Roll", "Fast 8", "Hyper Roll"],
+    "Marvel Rivals": ["Duelist", "Vanguard", "Strategist"]
+  };
+
+  const gameSelect = document.getElementById("gameSelect");
+  const roleWrapper = document.getElementById("role-wrapper");
+  const rolesContainer = document.getElementById("roles-container");
+
+  gameSelect.addEventListener("change", function () {
+    const selectedGame = this.value;
+    const roles = gameRoles[selectedGame] || [];
+
+    // Show the role section
+    rolesContainer.style.display = "block";
+
+    // Create new role select
+    const select = document.createElement("select");
+    select.name = "preferences";
+    select.id = "preferences";
+    select.multiple = true;
+    select.required = true;
+
+    roles.forEach(role => {
+      const option = document.createElement("option");
+      option.value = role;
+      option.textContent = role;
+      select.appendChild(option);
+    });
+
+    roleWrapper.innerHTML = ""; // Clear old
+    roleWrapper.appendChild(select);
+  });
+</script>

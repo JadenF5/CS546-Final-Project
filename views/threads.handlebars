@@ -1,11 +1,11 @@
 <div class="threads-page">
     <header>
         <h1>Threads for {{character}} in {{gameName}}</h1>
-        <a href="/games/{{gameName}}" class="btn btn-secondary">← Back to Game Page</a>
+        <a href="/games/{{encodeURIComponent gameName}}" class="btn btn-secondary">← Back to Game Page</a>
     </header>
 
     <div class="thread-sort">
-        <form method="GET" action="">
+        <form method="GET" action=".">
             <label for="sort">Sort by:</label>
             <select name="sort" id="sort" onchange="this.form.submit()">
                 <option value="latest" {{#ifEquals sort "latest"}}selected{{/ifEquals}}>Latest</option>
@@ -16,18 +16,16 @@
     </div>
 
     <div class="create-thread">
-        <a href="/posts/new?game={{gameName}}&character={{character}}" class="btn btn-primary">Create New Thread</a>
+        <a href="/posts/new?game={{encodeURIComponent gameName}}&character={{encodeURIComponent character}}" class="btn btn-primary">Create New Thread</a>
     </div>
 
     {{#if threads.length}}
         {{#each threads}}
             <div class="thread-card">
                 <div class="thread-header">
-                    <h3>
-                        {{#if this.pinned}}
-                        <span class="pinned-label">📌 Pinned</span>
-                        {{/if}}
-                    </h3>
+                    {{#if this.pinned}}
+                    <h3><span class="pinned-label">📌 Pinned</span></h3>
+                    {{/if}}
                 </div>
                 <h2><a href="/posts/{{this._id}}">{{this.title}}</a></h2>
                 <p>{{this.body}}</p>

@@ -60,8 +60,11 @@ const hbs = exphbs.create({
             Array.isArray(charMap?.[game]) && charMap[game].includes(character),
         includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
         join: (arr, sep) => (Array.isArray(arr) ? arr.join(sep) : arr),
+        encodeURIComponent: (str) => encodeURIComponent(str),
+        safeId: (str) => str.toLowerCase().replace(/[^a-z0-9]/gi, "-"),
     },
 });
+
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.use((req, res, next) => {
