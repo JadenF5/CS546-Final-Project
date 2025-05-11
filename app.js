@@ -11,6 +11,7 @@ import { checkLoyalMember } from "./middleware/achievements.js";
 import gameData from "./data/game.js";
 import notificationRoutes from "./routes/notifications.js";
 import friendRoutes from "./routes/friends.js";
+import teammateRoutes from "./routes/teammates.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
 
 app.use('/friends', friendRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/teammates", teammateRoutes);
 
 // Routes
 configRoutes(app);

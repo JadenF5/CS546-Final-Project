@@ -19,4 +19,4 @@ export const games = getCollectionFn("games");
 export const teammates = getCollectionFn("teammates");
 export const achievementDefinitions = getCollectionFn("achievementDefinitions");
 export const notifications = getCollectionFn("notifications");
-
+export const teammatePosts = getCollectionFn("teammatePosts");

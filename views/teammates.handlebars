@@ -1,0 +1,30 @@
+<h1>Looking for Teammates</h1>
+
+{{#if deleted}}
+  <p style="color: green; font-weight: bold;">Post deleted successfully.</p>
+{{/if}}
+
+
+{{#each posts}}
+  <div class="lft-post">
+    <h3>{{username}} - {{game}}</h3>
+    <p><strong>Roles:</strong> {{preferences}}</p>
+    <p><strong>Region:</strong> {{region}}</p>
+    <p><strong>Rank:</strong> {{rank}}</p>
+    <p><strong>Platform:</strong> {{platform}}</p>
+    <p><strong>Availability:</strong> {{availability}}</p>
+    <p><strong>Message:</strong> {{message}}</p>
+    <p><em>Posted on: {{timestamp}}</em></p>
+
+        {{#if isOwner}}
+      <form method="POST" action="/teammates/delete" style="margin-top: 10px;">
+        <input type="hidden" name="postId" value="{{_id}}" />
+        <button type="submit" class="dashboard-btn danger">Delete</button>
+      </form>
+    {{/if}}
+    <hr/>
+  </div>
+{{/each}}
+
+<a href="/teammates/new" class="dashboard-btn">Post Yours</a>
+<a href="/dashboard" class="dashboard-btn">Return to Dashboard</a>

@@ -1,0 +1,40 @@
+<h1>Create LFT Post</h1>
+<form action="/teammates/new" method="POST">
+  <label>Game:
+    <select name="game" required>
+      <option>Valorant</option>
+      <option>League of Legends</option>
+      <option>Overwatch 2</option>
+      <option>Teamfight Tactics</option>
+      <option>Marvel Rivals</option>
+    </select>
+  </label>
+
+  <label>Preferred Roles:
+    <select name="preferences" multiple>
+      <option>Duelist</option>
+      <option>Initiator</option>
+      <option>Controller</option>
+      <option>Sentinel</option>
+    </select>
+  </label>
+
+  <label>Region:
+    <select name="region" required>
+      <option>NA</option>
+      <option>EU</option>
+      <option>ASIA</option>
+      <option>OC</option>
+    </select>
+  </label>
+
+  <label>Rank: <input type="text" name="rank" /></label>
+  <label>Platform: <input type="text" name="platform" /></label>
+  <label>Availability: <input type="text" name="availability" /></label>
+  <label>Message:
+    <textarea name="message" required></textarea>
+  </label>
+
+  <button type="submit">Post</button>
+</form>
+<a href="/dashboard" class="dashboard-btn">Return to Dashboard</a>
