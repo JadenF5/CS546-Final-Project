@@ -466,4 +466,23 @@
     color: #777;
     display: block;
 }
-  
+
+.signout-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.logout-btn {
+  background-color: #6c757d;   /* match your “secondary” style */
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: #5a6268;
+}
+

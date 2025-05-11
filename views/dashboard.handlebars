@@ -98,7 +98,14 @@
                                         <li>
                                             <a href="/posts/{{this._id}}" class="thread-link">
                                                 <span class="thread-title">{{this.title}}</span>
-                                                <span class="thread-character">Character: {{this.character}}</span>
+                                                <span class="thread-character">
+                                                    Character: 
+                                                    {{#if this.character}}
+                                                        {{this.character}}
+                                                    {{else}}
+                                                        N/A
+                                                    {{/if}}
+                                                </span>
                                             </a>
                                         </li>
                                     {{/each}}
@@ -166,4 +173,8 @@
         </div>
     </section>
     {{/if}}
+
+    <div class="signout-container">
+        <a href="/logout" class="btn btn-secondary logout-btn">Sign Out</a>
+    </div>
 </div>

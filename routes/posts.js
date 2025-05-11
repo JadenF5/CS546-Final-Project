@@ -84,6 +84,7 @@ router.post("/posts/new", requireLogin, async (req, res) => {
 router.get("/posts/:postId", requireLogin, async (req, res) => {
     try {
         const post = await postData.getPostById(req.params.postId);
+        post.userId = post.userId.toString();
 
         if (!post) {
             return res.status(404).render("error", {
@@ -186,29 +187,45 @@ router.post("/posts/:postId/pin", requireLogin, async (req, res) => {
 });
 
 
-// Delete a thread
+// Delete a thread if creator or admin
 router.post("/posts/:postId/delete", requireLogin, async (req, res) => {
-    if (req.session.user.role !== "admin") {
-        return res.status(403).render("error", { title: "Forbidden", error: "Admin access only." });
-    }
-
-    const postsCollection = await posts();
-    await postsCollection.deleteOne({ _id: new ObjectId(req.params.postId) });
-    res.redirect("/dashboard"); // Or redirect to /games/:game
+  const userId = req.session.user._id;
+  const postsCollection = await posts();
+  const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
+  if (!post) {
+    return res.status(404).render("error", { title: "Not Found", error: "Post not found." });
+  }
+  // only author or admin
+  if (post.userId.toString() !== userId && req.session.user.role !== "admin") {
+    return res.status(403).render("error", { title: "Forbidden", error: "Not allowed" });
+  }
+  await postsCollection.deleteOne({ _id: post._id });
+  // redirect back to whichever listing makes sense
+  res.redirect(post.character ? `/threads/${post.game}/${post.character}` : `/games/${post.game}`);
 });
 
-// Delete a reply
+// Delete a reply if creator or admin
 router.post("/posts/:postId/comments/:commentId/delete", requireLogin, async (req, res) => {
-    if (req.session.user.role !== "admin") {
-        return res.status(403).render("error", { title: "Forbidden", error: "Admin access only." });
-    }
-
-    const postsCollection = await posts();
-    await postsCollection.updateOne(
-        { _id: new ObjectId(req.params.postId) },
-        { $pull: { comments: { _id: req.params.commentId } } }
-    );
-    res.redirect(`/posts/${req.params.postId}`);
+  const userId = req.session.user._id;
+  const postsCollection = await posts();
+  const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
+  if (!post) {
+    return res.status(404).render("error", { title: "Not Found", error: "Post not found." });
+  }
+  // find the comment
+  const comment = post.comments.find(c => c._id === req.params.commentId);
+  if (!comment) {
+    return res.status(404).render("error", { title: "Not Found", error: "Comment not found." });
+  }
+  // only author or admin
+  if (comment.userId !== userId && req.session.user.role !== "admin") {
+    return res.status(403).render("error", { title: "Forbidden", error: "Not allowed" });
+  }
+  await postsCollection.updateOne(
+    { _id: post._id },
+    { $pull: { comments: { _id: req.params.commentId } } }
+  );
+  res.redirect(`/posts/${post._id}`);
 });
 
 

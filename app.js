@@ -46,8 +46,14 @@ const hbs = exphbs.create({
         isSelected: (game, selectedGames) =>
             selectedGames && selectedGames.includes(game),
         ifEquals: function (a, b, options) {
-            return a === b ? options.fn(this) : options.inverse(this);
+            if (options && typeof options.fn === "function") {
+                return a === b
+                    ? options.fn(this)
+                    : options.inverse(this);
+            } 
+            return a === b;
         },
+        or: (a, b) => a || b,
         get: (obj, key) => obj?.[key],
         charSelected: (charMap, game, character) =>
             Array.isArray(charMap?.[game]) && charMap[game].includes(character),

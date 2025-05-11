@@ -139,11 +139,18 @@ router
         }
     });
 
-router.route("/logout").get((req, res) => {
-    req.session.destroy(() => {
-        res.clearCookie("AuthCookie");
-        res.render("logout", { title: "Logged Out" });
-    });
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).render("error", {
+        title: "Error",
+        error: "Could not log out. Please try again.",
+      });
+    }
+    res.clearCookie("AuthCookie");
+    return res.redirect("/login");
+  });
 });
 
 router.get("/api/characters", async (req, res) => {
