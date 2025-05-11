@@ -22,6 +22,21 @@
         <p><strong>By:</strong> {{post.username}} | {{post.timestamp}}</p>
         <p>{{post.body}}</p>
 
+        {{#if post.media.length}}
+            <div class="post-media">
+                {{#each post.media}}
+                    {{#ifEquals this.type "image"}}
+                        <img src="{{this.url}}" class="post-image" alt="attachment" />
+                    {{else}}
+                        <video controls class="post-video">
+                        <source src="{{this.url}}" type="video/mp4" />
+                        Your browser doesn't support HTML5 video.
+                        </video>
+                    {{/ifEquals}}
+                {{/each}}
+            </div>
+        {{/if}}
+
         {{#if post.tags.length}}
             <p><strong>Tags:</strong> 
                 {{#each post.tags}}

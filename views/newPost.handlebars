@@ -10,7 +10,7 @@
 
 <div class="new-post-form">
     <h2>Create a New Thread {{#if character}}for {{character}}{{/if}} in {{game}}</h2>
-    <form method="POST" action="/posts/new">
+    <form method="POST" action="/posts/new" enctype="multipart/form-data">
         <input type="hidden" name="game" value="{{game}}" />
         <input type="hidden" name="character" value="{{character}}" />
 
@@ -19,7 +19,15 @@
 
         <label for="body">Body</label>
         <textarea name="body" id="body" rows="6" required></textarea>
+
+        <label>Attach up to 3 images</label>
+        <input type="file" name="images" accept="image/*" multiple />
+
+        <label>Attach up to 1 video</label>
+        <input type="file" name="video" accept="video/*" />
         
+        <p class="form-note">NOTE: You can only attach up to 3 images or 1 video, not both! Max file size of 50 MB.</p>
+
         <label for="tags">Tags <small>(comma-separated)</small></label>
         <input
         name="tags"

@@ -208,3 +208,17 @@
     font-weight: 500;
 }
 
+.post-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.post-image {
+  max-width: 32%;
+  border-radius: 6px;
+}
+.post-video {
+  max-width: 100%;
+  border-radius: 6px;
+}

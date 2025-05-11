@@ -1,4 +1,7 @@
 import express from "express";
+import { fileURLToPath } from "url";
+import path from "path";
+import fs from "fs";
 import { ObjectId } from "mongodb";
 import { requireLogin } from "../middleware/auth.js";
 import { posts } from "../config/mongoCollections.js";
@@ -7,6 +10,9 @@ import { users } from "../config/mongoCollections.js";
 import { awardAchievement } from "../helpers/achievements.js";
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const uploadDir = path.join(__dirname, "../public/uploads");
 
 router.get("/posts/new", requireLogin, async (req, res) => {
     const { game, character } = req.query;
@@ -33,52 +39,138 @@ router.post("/posts/new", requireLogin, async (req, res) => {
         });
     }
 
-    const tagList = Array.isArray(tags)
-    ? tags
-    : tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
+  let images = req.files?.images || [];
+  let vids   = req.files?.video  ? [req.files.video] : [];
+  if (!Array.isArray(images)) images = [images];
 
-    try {
-        const postsCollection = await posts();
-        const userCollection = await users();
-        const userId = new ObjectId(req.session.user._id);
-        const newPost = {
-            userId,
-            username: req.session.user.username,
-            game,
-            character: character || null,
-            title,
-            body,
-            tags: tagList,
-            media: [],
-            likes: 0,
-            likedBy: [],
-            comments: [],
-            pinned: false,
-            timestamp: new Date().toISOString(),
-        };
+  if (images.length && vids.length) {
+    return res.status(400).render("error", {
+      title: "Error",
+      error: "You can upload either up to 3 images or 1 video, not both.",
+    });
+  }
+  if (images.length > 3) {
+    return res.status(400).render("error", {
+      title: "Error",
+      error: "Maximum 3 images allowed.",
+    });
+  }
+  if (vids.length > 1) {
+    return res.status(400).render("error", {
+      title: "Error",
+      error: "Maximum 1 video allowed.",
+    });
+  }
 
-        const insertResult = await postsCollection.insertOne(newPost);
-        const userPostCount = await postsCollection.countDocuments({ userId });
-        await awardAchievement(userId, "First Post!", userCollection);
-        if (userPostCount >= 10) {
-            await awardAchievement(userId, "Clip Professional", userCollection);
-        }
-        const postId = insertResult.insertedId;
-
-        if (character) {
-            return res.redirect(`/threads/${game}/${character}`);
-        } else {
-            return res.redirect(`/games/${game}`);
-        }
-    } catch (err) {
-        return res.status(500).render("error", {
-            title: "Error",
-            error: "Could not insert post.",
-        });
+  for (const img of images) {
+    if (!img.mimetype.startsWith("image/")) {
+      return res.status(400).render("error", {
+        title: "Error",
+        error: "All files in the images field must be image types.",
+      });
     }
+  }
+  for (const vid of vids) {
+    if (!vid.mimetype.startsWith("video/")) {
+      return res.status(400).render("error", {
+        title: "Error",
+        error: "Files in the video field must be video types.",
+      });
+    }
+  }
+
+  fs.mkdir(uploadDir, { recursive: true }, (mkdirErr) => {
+    if (mkdirErr) {
+      console.error("Upload directory creation failed:", mkdirErr);
+      return res.status(500).render("error", {
+        title: "Error",
+        error: "Server error preparing file upload.",
+      });
+    }
+
+    const media = [];
+    const allFiles = [
+      ...images.map((f) => ({ file: f, type: "image" })),
+      ...vids.map((f)   => ({ file: f, type: "video" })),
+    ];
+    let idx = 0;
+
+    function moveNext() {
+      if (idx === allFiles.length) {
+        (async () => {
+          try {
+            const tagList = tags
+              ? Array.isArray(tags)
+                ? tags
+                : tags
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter((t) => t)
+              : [];
+
+            const postsCollection = await posts();
+            const usersCollection = await users();
+            const userId           = new ObjectId(req.session.user._id);
+
+            const newPost = {
+              userId,
+              username: req.session.user.username,
+              game,
+              character: character || null,
+              title,
+              body,
+              tags: tagList,
+              media,
+              likes: 0,
+              likedBy: [],
+              comments: [],
+              pinned: false,
+              timestamp:  new Date().toISOString(),
+            };
+
+            const { insertedId } = await postsCollection.insertOne(newPost);
+
+            await awardAchievement(userId, "First Post!", usersCollection);
+            const userPostCount = await postsCollection.countDocuments({ userId });
+            if (userPostCount >= 10) {
+              await awardAchievement(userId, "Clip Professional", usersCollection);
+            }
+
+            // if (character) {
+            //   return res.redirect(`/threads/${game}/${character}`);
+            // } else {
+            //   return res.redirect(`/games/${game}`);
+            // }
+            return res.redirect(`/posts/${insertedId.toString()}`);
+          } catch (dbErr) {
+            console.error("DB error:", dbErr);
+            return res.status(500).render("error", {
+              title: "Error",
+              error: "Failed to save your post.",
+            });
+          }
+        })();
+        return;
+      }
+
+      const { file, type } = allFiles[idx++];
+      const filename = `${Date.now()}-${file.name}`;
+      const dest = path.join(uploadDir, filename);
+
+      file.mv(dest, (mvErr) => {
+        if (mvErr) {
+          console.error("File move error:", mvErr);
+          return res.status(500).render("error", {
+            title: "Error",
+            error: "Could not save uploaded file.",
+          });
+        }
+        media.push({ type, url: `/public/uploads/${filename}` });
+        moveNext();
+      });
+    }
+    moveNext();
+  });
 });
 
 router.get("/posts/:postId", requireLogin, async (req, res) => {
@@ -189,19 +281,32 @@ router.post("/posts/:postId/pin", requireLogin, async (req, res) => {
 
 // Delete a thread if creator or admin
 router.post("/posts/:postId/delete", requireLogin, async (req, res) => {
-  const userId = req.session.user._id;
-  const postsCollection = await posts();
-  const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
-  if (!post) {
-    return res.status(404).render("error", { title: "Not Found", error: "Post not found." });
-  }
-  // only author or admin
-  if (post.userId.toString() !== userId && req.session.user.role !== "admin") {
-    return res.status(403).render("error", { title: "Forbidden", error: "Not allowed" });
-  }
-  await postsCollection.deleteOne({ _id: post._id });
-  // redirect back to whichever listing makes sense
-  res.redirect(post.character ? `/threads/${post.game}/${post.character}` : `/games/${post.game}`);
+    const userId = req.session.user._id;
+    const postsCollection = await posts();
+    const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
+    if (!post) {
+        return res.status(404).render("error", { title: "Not Found", error: "Post not found." });
+    }
+    // only author or admin
+    if (post.userId.toString() !== userId && req.session.user.role !== "admin") {
+        return res.status(403).render("error", { title: "Forbidden", error: "Not allowed" });
+    }
+
+    if (Array.isArray(post.media)) {
+        post.media.forEach(({ url }) => {
+            const filename = path.basename(url);
+            const filePath = path.join(uploadDir, filename);
+            fs.unlink(filePath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                console.error('Failed to delete file:', filePath, err);
+                }
+            });
+        });
+    }
+
+    await postsCollection.deleteOne({ _id: post._id });
+    // redirect back to whichever listing makes sense
+    res.redirect(post.character ? `/threads/${post.game}/${post.character}` : `/games/${post.game}`);
 });
 
 // Delete a reply if creator or admin

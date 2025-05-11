@@ -52,6 +52,17 @@
     background-color: #0056b3;
 }
 
+.new-post-form .form-note {
+  background-color: #fff8e1;
+  border-left: 4px solid #ffecb3;
+  padding: 0.5rem 1rem;
+  margin: 0.75rem 0 1.5rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #665c00;
+}
+
+
 .back-link-container {
     text-align: center;
     margin-bottom: 1.5rem;
