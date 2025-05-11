@@ -15,6 +15,40 @@
             <h1>Welcome, {{user.username}}!</h1>
         </div>
     </header>
+    <section class="dashboard-section">
+    <h2>Search</h2>
+    <form action="/search" method="GET" class="search-form">
+    <input type="text" name="query" placeholder="Search posts or users..." required>
+
+    <select name="type">
+        <option value="posts">Posts</option>
+        <option value="users">Users</option>
+    </select>
+
+    <select name="game">
+        <option value="">All Games</option>
+        {{#each allGames}}
+        <option value="{{this.name}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+
+    <select name="postType">
+        <option value="">All Types</option>
+        <option value="clip">Clip</option>
+        <option value="question">Question</option>
+        <option value="meme">Meme</option>
+        <option value="meme">Strategy</option>
+        <option value="meme">Discussion</option>
+        <option value="meme">Meta</option>
+        <option value="meme">Guide</option>
+        <option value="meme">News</option>
+        <option value="meme">Updates</option>
+        <option value="meme">Help</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    </section>
 
     {{!-- Game Navigation Bar --}}
     <div class="game-navigation">

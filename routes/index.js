@@ -6,6 +6,7 @@ import threadsRouter from "./threads.js"
 import postsRouter from './posts.js';
 import achievementRoutes from "./achievements.js";
 import adminRoutes from './admin.js';
+import searchRoutes from "./search.js";
 
 const router = express.Router();
 import userRoutes from './users.js';
@@ -24,4 +25,5 @@ export default (app) => {
     app.use('/', userRoutes);
     app.use("/", achievementRoutes);
     app.use("/", adminRoutes);
+    app.use("/search", searchRoutes);
 };

@@ -1,0 +1,45 @@
+<h1>{{title}}</h1>
+
+{{#if users.length}}
+  <h2>Users</h2>
+  <ul>
+    {{#each users}}
+      <li><a href="/profile/{{this._id}}">{{this.username}}</a></li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+{{#if posts.length}}
+  <h2>Posts</h2>
+  <div class="search-thread-list">
+    {{#each posts}}
+      <a href="/posts/{{this._id}}" class="thread-link">
+        <div class="thread-list-item">
+          <span class="thread-title">{{this.title}}</span>
+          <span class="thread-character">Character: {{this.character}}</span>
+          <span class="thread-meta">
+            Game: {{this.game}} |
+            Tags:
+            {{#if this.tags.length}}
+              {{#each this.tags}}
+                <span class="tag-label">{{this}}</span>
+              {{/each}}
+            {{else}}
+              <span class="tag-label">None</span>
+            {{/if}}
+          </span>
+        </div>
+      </a>
+    {{/each}}
+  </div>
+{{/if}}
+
+{{#unless users.length}}
+  {{#unless posts.length}}
+    <p>No results found.</p>
+  {{/unless}}
+{{/unless}}
+
+<div style="margin-top: 20px;">
+  <a href="/dashboard" class="btn btn-secondary">Return to Dashboard</a>
+</div>
