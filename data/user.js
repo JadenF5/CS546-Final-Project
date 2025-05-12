@@ -111,7 +111,7 @@ export const loginUser = async ({ email, password }) => {
     // Input validation
     email = validateEmail(email);
     if (!password || typeof password !== "string") {
-        throw new Error("Password must be a non-empty string.");
+        throw new Error("Password must be a non empty string.");
     }
 
     // Find user
