@@ -2,22 +2,20 @@ import { ObjectId } from "mongodb";
 import { posts } from "../config/mongoCollections.js";
 
 export const getPostById = async (postId) => {
-
     if (!ObjectId.isValid(postId)) {
         console.log("❌ Invalid ObjectId");
-        throw "Invalid post ID";
+        throw new Error("Invalid post ID");
     }
 
     const postsCollection = await posts();
     const result = await postsCollection.findOne({ _id: new ObjectId(postId) });
 
-    if (!result) console.log("⚠️ Post not found in DB");
+    if (!result) console.log("Post not found in DB");
     return result;
 };
 
-
 export const addCommentToPost = async (postId, commentObj) => {
-    if (!ObjectId.isValid(postId)) throw "Invalid post ID";
+    if (!ObjectId.isValid(postId)) throw new Error("Invalid post ID");
 
     const postsCollection = await posts();
     const result = await postsCollection.updateOne(
@@ -25,32 +23,34 @@ export const addCommentToPost = async (postId, commentObj) => {
         { $push: { comments: commentObj } }
     );
 
-    if (result.modifiedCount === 0) throw "Failed to add comment.";
+    if (result.modifiedCount === 0) throw new Error("Failed to add comment.");
     return true;
 };
 
 export const toggleLike = async (postId, userId) => {
-    if (!ObjectId.isValid(postId)) throw "Invalid post ID";
+    if (!ObjectId.isValid(postId)) throw new Error("Invalid post ID");
 
     const postsCollection = await posts();
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
-    if (!post) throw "Post not found";
+    if (!post) throw new Error("Post not found");
 
     const hasLiked = post.likedBy?.includes(userId);
 
     const update = hasLiked
         ? {
               $inc: { likes: -1 },
-              $pull: { likedBy: userId }
+              $pull: { likedBy: userId },
           }
         : {
               $inc: { likes: 1 },
-              $addToSet: { likedBy: userId }
+              $addToSet: { likedBy: userId },
           };
 
-    const result = await postsCollection.updateOne({ _id: new ObjectId(postId) }, update);
-    if (result.modifiedCount === 0) throw "Failed to update likes";
+    const result = await postsCollection.updateOne(
+        { _id: new ObjectId(postId) },
+        update
+    );
+    if (result.modifiedCount === 0) throw new Error("Failed to update likes");
 
     return !hasLiked; // true if now liked, false if unliked
 };
-
