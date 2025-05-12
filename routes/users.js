@@ -121,7 +121,9 @@ router.get("/profile/:id", async (req, res) => {
         if (isOwner || privacy.showPosts) {
             const postsCollection = await posts();
             userPosts = await postsCollection
-                .find({ userId: new ObjectId(userId) })
+                .find({
+                    $or: [{ userId: userId }, { userId: new ObjectId(userId) }],
+                })
                 .limit(10)
                 .sort({ timestamp: -1 })
                 .toArray();
