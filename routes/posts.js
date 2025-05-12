@@ -43,6 +43,14 @@ router.post("/posts/new", requireLogin, async (req, res) => {
   let images = req.files?.images || [];
   let vids   = req.files?.video  ? [req.files.video] : [];
   if (!Array.isArray(images)) images = [images];
+  const files = [...images, ...vids];
+
+  if(files.some(f => f && f.truncated)) {
+    return res.status(413).render("error", {
+      title: "File Too Large",
+      error: "One of your uploads on your post exceeded 50 MB. Please pick a smaller file."
+    });
+  }
 
   if (images.length && vids.length) {
     return res.status(400).render("error", {
@@ -162,11 +170,6 @@ router.post("/posts/new", requireLogin, async (req, res) => {
               await awardAchievement(userId, "Clip Professional", usersCollection);
             }
 
-            // if (character) {
-            //   return res.redirect(`/threads/${game}/${character}`);
-            // } else {
-            //   return res.redirect(`/games/${game}`);
-            // }
             return res.redirect(`/posts/${insertedId.toString()}`);
           } catch (dbErr) {
             console.error("DB error:", dbErr);

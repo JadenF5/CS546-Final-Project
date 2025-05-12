@@ -33,6 +33,15 @@
   margin-bottom: 1rem;
 }
 
+.new-post-form input[type="file"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
+}
+
 .new-post-form textarea {
     resize: vertical;
     min-height: 120px;
@@ -60,6 +69,10 @@
   border-radius: 4px;
   font-size: 0.95rem;
   color: #665c00;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 

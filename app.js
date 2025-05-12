@@ -78,7 +78,7 @@ app.use("/teammates", teammateRoutes);
 app.use(
   fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max per file
-    abortOnLimit: true,
+    abortOnLimit: false,
   })
 );
 
