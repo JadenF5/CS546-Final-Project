@@ -17,6 +17,8 @@
 
 .post-box h1 {
     margin-top: 0;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .post-box form {

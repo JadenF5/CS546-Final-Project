@@ -44,13 +44,32 @@ router.get("/dashboard", requireLogin, async (req, res) => {
         if (user.selectedGames && user.selectedGames.length > 0) {
             for (const game of user.selectedGames) {
                 // Get latest threads for this game
-                const gameLatestThreads = await postsCollection
+                const gameTopThreads = await postsCollection
                     .find({ game: game })
-                    .sort({ timestamp: -1 })
+                    .sort({ likes: -1 })
                     .limit(3) // Show 3 latest posts per game
                     .toArray();
 
-                gameThreads[game] = gameLatestThreads;
+                gameThreads[game] = gameTopThreads;
+            }
+        }
+
+        const characterPostsByGame = {};
+
+        for (const [game, chars] of Object.entries(user.favoriteCharacters || {})) {
+            const postsForGame = {};
+            for (const charName of chars) {
+                const recent = await postsCollection
+                .find({ game, character: charName })
+                .sort({ timestamp: -1 })
+                .limit(3)
+                .toArray();
+                if (recent.length) {
+                postsForGame[charName] = recent;
+                }
+            }
+            if (Object.keys(postsForGame).length) {
+                characterPostsByGame[game] = postsForGame;
             }
         }
 
@@ -91,6 +110,7 @@ router.get("/dashboard", requireLogin, async (req, res) => {
             userGames: userGames,
             otherGames: otherGames,
             gameThreads: gameThreads,
+            characterPostsByGame: characterPostsByGame,
             friends: friends,
             helpers: hbsHelpers,
         });

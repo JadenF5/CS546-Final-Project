@@ -92,9 +92,9 @@
                             {{/if}}
                         </div>
 
-                        {{!-- Latest Posts for this game --}}
+                        {{!-- Top Posts for this game --}}
                         <div class="game-threads">
-                            <h4>Latest Forum Threads:</h4>
+                            <h4>Top Forum Threads:</h4>
                             {{#if (lookup ../gameThreads this.name)}}
                                 <ul class="thread-list">
                                     {{#each (lookup ../gameThreads this.name)}}
@@ -117,6 +117,36 @@
                                 <p class="no-threads">No recent threads</p>
                             {{/if}}
                         </div>
+
+                        {{!-- Posts about favorite characters for this game --}}
+                        {{#if (lookup ../user.favoriteCharacters this.name)}}
+                            <div class="game-threads">
+                                <h4>Posts about Your Favorite Characters:</h4>
+                                {{#with (lookup ../characterPostsByGame this.name) as |charsMap|}}
+                                    {{#if charsMap}}
+                                        {{#each charsMap}}
+                                            <div class="character-group">
+                                            <h3>{{@key}}:</h3>
+                                            <ul class="thread-list">
+                                                {{#each this}}
+                                                <li class="thread-list-item">
+                                                    <a href="/posts/{{this._id}}" class="thread-link">
+                                                    <span class="thread-title">{{this.title}}</span>
+                                                    <span class="thread-meta">
+                                                        By {{this.username}} | {{this.timestamp}}
+                                                    </span>
+                                                    </a>
+                                                </li>
+                                                {{/each}}
+                                            </ul>
+                                            </div>
+                                        {{/each}}
+                                    {{else}}
+                                    <p>No posts yet about your favorite characters.</p>
+                                    {{/if}}
+                                {{/with}}
+                            </div>
+                        {{/if}}
                         
                         <a href="/games/{{encodeURIComponent this.name}}" class="btn btn-primary">View All Threads</a>
                     </div>

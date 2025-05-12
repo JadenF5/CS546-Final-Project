@@ -61,6 +61,12 @@ header h1 {
 .thread-card h2 a {
     color: #007bff;
     text-decoration: none;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
 
 .thread-card h2 a:hover {
@@ -70,6 +76,11 @@ header h1 {
 .thread-card p {
     margin-bottom: 0.75rem;
     color: #555;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .meta {

@@ -40,6 +40,20 @@ router.post("/posts/new", requireLogin, async (req, res) => {
         });
     }
 
+  if(title.length > 300) {
+    return res.status(400).render("error", {
+            title: "Title Too Big",
+            error: "Your post's title is very, very large. Please keep it within 300 characters.",
+      });
+  }
+
+  if(body.length > 5000) {
+    return res.status(400).render("error", {
+            title: "Content Too Big",
+            error: "Your post is very, very large. Please keep it within 5000 characters.",
+      });
+  }
+
   let images = req.files?.images || [];
   let vids   = req.files?.video  ? [req.files.video] : [];
   if (!Array.isArray(images)) images = [images];
@@ -237,6 +251,13 @@ router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
                 title: "Error",
                 error: "Comment cannot be empty.",
             });
+        }
+
+        if(commentText.length > 3000) {
+          return res.status(400).render("error", {
+                title: "Comment Too Big",
+                error: "Your comment is very, very large. Please keep it within 3,000 characters.",
+          });
         }
 
         const newComment = {

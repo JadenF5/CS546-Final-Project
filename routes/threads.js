@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/threads/:gameName/:characterName", requireLogin, async (req, res) => {
     try {
         const { gameName, characterName } = req.params;
-        const sortOption = req.query.sort || "latest";
+        const sortOption = req.query.sort || "pinned";
 
         const gamesCollection = await games();
         const postsCollection = await posts();
@@ -26,10 +26,10 @@ router.get("/threads/:gameName/:characterName", requireLogin, async (req, res) =
         if (sortOption === "liked") {
             sortCriteria.likes = -1;
             sortCriteria.timestamp = -1;
-        } else if (sortOption === "all") {
-            sortCriteria.timestamp = -1;
+        } else if (sortOption === "pinned") {
+            sortCriteria.timestamp = -1;    // "all" is now "pinned", they are essentially the same
         } else {
-            sortCriteria.timestamp = -1;    // default: latest
+            sortCriteria.timestamp = -1;    // latest = pinned basically
         }
 
         const threads = await postsCollection

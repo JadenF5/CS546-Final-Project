@@ -5,12 +5,12 @@
     </header>
 
     <div class="thread-sort">
-        <form method="GET" action=".">
+        <form method="GET" action="/threads/{{encodeURIComponent gameName}}/{{encodeURIComponent character}}">
             <label for="sort">Sort by:</label>
             <select name="sort" id="sort" onchange="this.form.submit()">
                 <option value="latest" {{#ifEquals sort "latest"}}selected{{/ifEquals}}>Latest</option>
                 <option value="liked" {{#ifEquals sort "liked"}}selected{{/ifEquals}}>Most Liked</option>
-                <option value="all" {{#ifEquals sort "all"}}selected{{/ifEquals}}>All</option>
+                <option value="pinned" {{#ifEquals sort "pinned"}}selected{{/ifEquals}}>Pinned</option>
             </select>
         </form>
     </div>
