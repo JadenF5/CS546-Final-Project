@@ -45,6 +45,19 @@ router.post("/new", requireLogin, async (req, res) => {
         timestamp: new Date().toISOString()
     };
 
+    if (!message || message.trim().length === 0) {
+        return res.status(400).render("error", {
+          title: "Error",
+          error: "Message is required."
+        });
+    }
+      if (message.length > 1000) {
+        return res.status(400).render("error", {
+          title: "Message Too Long",
+          error: "Your message is too long; please keep it under 1 000 characters."
+        });
+    }
+
     const collection = await teammatePosts();
     await collection.insertOne(newPost);
 
