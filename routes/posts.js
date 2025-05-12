@@ -215,6 +215,7 @@ router.post("/posts/new", requireLogin, async (req, res) => {
             if (userPostCount >= 10) {
               await awardAchievement(userId, "Clip Professional", usersCollection);
             }
+            
 
             return res.redirect(`/posts/${insertedId.toString()}`);
           } catch (dbErr) {
@@ -353,11 +354,8 @@ router.post("/posts/:postId/like", requireLogin, async (req, res) => {
 
         const usersCollection = await users();
 
-        const userPosts = await postsCollection.find({ userId }).toArray();
-        const totalLikes = userPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
-
-        if (totalLikes >= 50) {
-            await awardAchievement(userId, "Famous", usersCollection);
+        if (post.likes >= 50) {
+          await awardAchievement(post.userId, "Famous", usersCollection);
         }
 
         res.redirect(`/posts/${postId}`);

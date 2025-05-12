@@ -144,7 +144,7 @@ async function seedPosts(usersList, gamesList) {
             body: `I've been trying different builds for ${lolChars[0].name} in season 14, and here's what I found most effective...`,
             tags: ["strategy", "build", lolChars[0].role.toLowerCase()],
             media: [],
-            likes: 15,
+            likes: 1,
             comments: [
                 {
                     _id: new Date().getTime().toString(),
