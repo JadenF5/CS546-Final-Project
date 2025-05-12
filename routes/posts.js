@@ -8,6 +8,7 @@ import { posts } from "../config/mongoCollections.js";
 import * as postData from "../data/post.js";
 import { users } from "../config/mongoCollections.js";
 import { awardAchievement } from "../helpers/achievements.js";
+import { notifications } from "../config/mongoCollections.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -129,6 +130,31 @@ router.post("/posts/new", requireLogin, async (req, res) => {
             };
 
             const { insertedId } = await postsCollection.insertOne(newPost);
+
+            if (character){
+              const usersToNotify = await usersCollection.find({
+                [`favoriteCharacters.${game}`]: character}).toArray();
+
+                const notificationCollection = await notifications();
+                const authorId = req.session.user._id.toString();
+
+                for (const user of usersToNotify){
+                  if (user._id.toString() === authorId){
+                    continue;
+                  }
+
+                  await notificationCollection.insertOne({
+                    type: "character_post",
+                    fromUserId: authorId,
+                    toUserId: user._id.toString(),
+                    seen: false,
+                    timestamp: new Date().toISOString(),
+                    message: `${req.session.user.username} posted about ${character} in ${game}.`
+                  });
+                }
+
+              
+            }
 
             await awardAchievement(userId, "First Post!", usersCollection);
             const userPostCount = await postsCollection.countDocuments({ userId });
