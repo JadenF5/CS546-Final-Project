@@ -83,9 +83,9 @@ router.get("/profile/:id", async (req, res) => {
         );
 
         const achievementEmojis = {};
-            for (const a of achievementCatalog) {
-                achievementEmojis[a.name] = { emoji: a.emoji };
-            }
+        for (const a of achievementCatalog) {
+            achievementEmojis[a.name] = { emoji: a.emoji };
+        }
 
         if (user.achievements && Array.isArray(user.achievements)) {
             user.achievements = user.achievements.map((a) => ({
@@ -121,7 +121,7 @@ router.get("/profile/:id", async (req, res) => {
         if (isOwner || privacy.showPosts) {
             const postsCollection = await posts();
             userPosts = await postsCollection
-                .find({ userId })
+                .find({ userId: new ObjectId(userId) })
                 .limit(10)
                 .sort({ timestamp: -1 })
                 .toArray();
@@ -148,7 +148,7 @@ router.get("/profile/:id", async (req, res) => {
                     achievements: isOwner || privacy.showAchievements,
                     posts: isOwner || privacy.showPosts,
                 },
-                achievementEmojis
+                achievementEmojis,
             });
         }
 
@@ -171,7 +171,7 @@ router.get("/profile/:id", async (req, res) => {
                     achievements: isOwner || privacy.showAchievements,
                     posts: isOwner || privacy.showPosts,
                 },
-                achievementEmojis
+                achievementEmojis,
             });
         }
 
@@ -191,7 +191,7 @@ router.get("/profile/:id", async (req, res) => {
                         achievements: isOwner || privacy.showAchievements,
                         posts: isOwner || privacy.showPosts,
                     },
-                    achievementEmojis
+                    achievementEmojis,
                 });
             }
 
@@ -356,28 +356,27 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
     }
 });
 
-
 router.get("/find", requireLogin, async (req, res) => {
     const userId = req.session.user._id;
     const userCollection = await users();
-    const currentUser = await userCollection.findOne({ _id: new ObjectId(userId) });
-  
+    const currentUser = await userCollection.findOne({
+        _id: new ObjectId(userId),
+    });
+
     const allUsers = await userCollection
-      .find({ _id: { $ne: new ObjectId(userId) } })
-      .project({ _id: 1, username: 1 })
-      .toArray();
-  
+        .find({ _id: { $ne: new ObjectId(userId) } })
+        .project({ _id: 1, username: 1 })
+        .toArray();
+
     // Remove users already in friend list
     const filtered = allUsers.filter(
-      u => !currentUser.friends.includes(u._id.toString())
+        (u) => !currentUser.friends.includes(u._id.toString())
     );
-  
+
     res.render("findFriends", {
-      title: "Find Friends",
-      users: filtered
+        title: "Find Friends",
+        users: filtered,
     });
-  });
-  
-  
+});
 
 export default router;

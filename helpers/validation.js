@@ -15,12 +15,14 @@ export const validateString = (
     regex = /^[\w\s-]+$/
 ) => {
     if (!input || typeof input !== "string")
-        throw new Error`${fieldName} must be a non-empty string.`();
+        throw new Error(`${fieldName} must be a non-empty string.`);
     input = input.trim();
     if (input.length < min || input.length > max)
-        throw new Error`${fieldName} must be between ${min} and ${max} characters.`();
+        throw new Error(
+            `${fieldName} must be between ${min} and ${max} characters.`
+        );
     if (!regex.test(input))
-        throw new Error`${fieldName} contains invalid characters.`();
+        throw new Error(`${fieldName} contains invalid characters.`);
     return input;
 };
 
