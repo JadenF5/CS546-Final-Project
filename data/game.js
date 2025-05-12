@@ -203,7 +203,7 @@ export const createGame = async (gameData) => {
 
     const existingGame = await gamesCollection.findOne({ name: gameData.name });
     if (existingGame) {
-        throw new Error`Game with name ${gameData.name} already exists`();
+        throw new Error(`Game with name ${gameData.name} already exists`);
     }
 
     const insertInfo = await gamesCollection.insertOne(gameData);
@@ -228,7 +228,7 @@ export const getGameByName = async (name) => {
     const game = await gamesCollection.findOne({ name: name });
 
     if (!game) {
-        throw new Error`No game found with name: ${name}`();
+        throw new Error(`No game found with name: ${name}`);
     }
 
     return game;
