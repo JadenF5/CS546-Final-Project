@@ -203,12 +203,12 @@ export const createGame = async (gameData) => {
 
     const existingGame = await gamesCollection.findOne({ name: gameData.name });
     if (existingGame) {
-        throw `Game with name ${gameData.name} already exists`;
+        throw new Error`Game with name ${gameData.name} already exists`();
     }
 
     const insertInfo = await gamesCollection.insertOne(gameData);
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
-        throw "Could not add game";
+        throw new Error("Could not add game");
     }
 
     return { ...gameData, _id: insertInfo.insertedId };
@@ -221,14 +221,14 @@ export const getAllGames = async () => {
 
 export const getGameByName = async (name) => {
     if (!name || typeof name !== "string") {
-        throw "Game name must be a non-empty string";
+        throw new Error("Game name must be a non-empty string");
     }
 
     const gamesCollection = await games();
     const game = await gamesCollection.findOne({ name: name });
 
     if (!game) {
-        throw `No game found with name: ${name}`;
+        throw new Error`No game found with name: ${name}`();
     }
 
     return game;
@@ -295,7 +295,7 @@ export const initializeGames = async () => {
         return gamesList;
     } catch (error) {
         console.error("ERROR: Failed to initialize games:", error);
-        throw error;
+        throw new error();
     }
 };
 
