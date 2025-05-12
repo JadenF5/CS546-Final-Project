@@ -41,7 +41,7 @@ router.post("/request", requireLogin, async (req, res) => {
 
     try {
         if (!toUsername || typeof toUsername !== "string") {
-            return res.render("friendRequest", {
+            return res.status(400).render("friendRequest", {
                 title: "Friend Request",
                 error: "Username is required."
             });
@@ -51,7 +51,7 @@ router.post("/request", requireLogin, async (req, res) => {
         const toUser = await userCollection.findOne({ username: toUsername });
 
         if (!toUser){
-            return res.render("friendRequest", {
+            return res.status(404).render("friendRequest", {
                 title: "Friend Request",
                 error: "User not found."
             });
@@ -59,18 +59,16 @@ router.post("/request", requireLogin, async (req, res) => {
 
         const toUserId = toUser._id.toString();
 
-        const result = await sendFriendRequest(fromUserId, toUserId);
+        await sendFriendRequest(fromUserId, toUserId);
         
-        if (result.success){
-            return res.render("friendRequest", {
-                title: "Friend Request",
-                success: true
-            });
-        }
+        return res.render("friendRequest", {
+            title: "Send a Friend Request",
+            success: true,
+        });
     } 
     
     catch (e){
-        return res.render("friendRequest", {
+        return res.status(400).render("friendRequest", {
             title: "Friend Request",
             error: e.toString()
         });
