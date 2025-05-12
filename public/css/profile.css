@@ -59,7 +59,7 @@
 .btn-primary {
     background-color: #0070f3;
     color: white;
-    transform: translateY(14.75px);
+    /* transform: translateY(14.75px); */
 }
 
 .btn-secondary {
