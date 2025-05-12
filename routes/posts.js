@@ -260,6 +260,9 @@ router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
           });
         }
 
+        const userId = req.session.user._id;
+        const username = req.session.user.username;
+
         const newComment = {
             _id: new ObjectId().toString(),
             userId: req.session.user._id,
@@ -269,6 +272,22 @@ router.post("/posts/:postId/reply", requireLogin, async (req, res) => {
         };
 
         await postData.addCommentToPost(req.params.postId, newComment);
+
+        const postsCollection = await posts();
+        const post = await postsCollection.findOne({ _id: new ObjectId(req.params.postId) });
+
+        if (post && post.userId.toString() !== userId){
+          const notificationCollection = await notifications();
+          await notificationCollection.insertOne({
+            type: "comment",
+            fromUserId: userId,
+            toUserId: post.userId.toString(),
+            seen: false,
+            timestamp: new Date().toISOString(),
+            message: `${username} commented on your post "${post.title}".`
+          });
+        }
+        
         res.redirect(`/posts/${req.params.postId}`);
     } catch (e) {
         res.status(500).render("error", {
@@ -282,9 +301,24 @@ router.post("/posts/:postId/like", requireLogin, async (req, res) => {
     try {
         const postId = req.params.postId;
         const userId = req.session.user._id;
+        const username = req.session.user.username;
 
         await postData.toggleLike(postId, userId);
         const postsCollection = await posts();
+        const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+
+        if (post && post.userId.toString() !== userId){
+          const notificationCollection = await notifications();
+          await notificationCollection.insertOne({
+            type: "like",
+            fromUserId: userId,
+            toUserId: post.userId.toString(),
+            seen: false,
+            timestamp: new Date().toISOString(),
+            message: `${username} liked your post "${post.title}".`
+          });
+        }
+
         const usersCollection = await users();
 
         const userPosts = await postsCollection.find({ userId }).toArray();
