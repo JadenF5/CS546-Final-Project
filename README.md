@@ -13,8 +13,9 @@ A fan community hub for multiplayer games including Marvel Rivals, Overwatch 2, 
 Built using HTML, CSS, JavaScript, Express, Node.js, MongoDB, and Handlebars.
 
 **How to Setup**
+First, run `npm install` to install the necessary dependencies for this project.
 
-Run `npm run seed` to seed the database with initial game data, sample users, and sample posts .
+Then, run `npm run seed` to seed the database with initial game data, sample users, and sample posts.
 
 Finally, run `npm start` to start the application and navigate to `http://localhost:3000` in your browser.
 
