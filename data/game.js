@@ -57,21 +57,70 @@ async function fetchCharacterDetails(game) {
                     const response = await axios.get(url);
                     const champData = response.data.data;
 
-                    characters = Object.values(champData).map((champ) => {
-                        let name = champ.name;
+                    // Static mapping for Set 10
+                    const set10Traits = {
+                        Ahri: ["KDA", "Spellweaver"],
+                        Akali: ["KDA", "Breakout"],
+                        Amumu: ["Emo", "Guardian"],
+                        Annie: ["Emo", "Superfan"],
+                        Aphelios: ["Country", "Rapidfire"],
+                        Bard: ["Jazz", "Sentinel"],
+                        Blitzcrank: ["Disco", "Guardian"],
+                        Caitlyn: ["8-bit", "Rapidfire"],
+                        Corki: ["Country", "Mosher"],
+                        Ekko: ["True Damage", "Sentinel"],
+                        Evelynn: ["KDA", "Executioner"],
+                        Garen: ["8-bit", "Bruiser"],
+                        Gragas: ["Jazz", "Bruiser"],
+                        Jax: ["EDM", "Mosher"],
+                        Jhin: ["Maestro", "Big Shot"],
+                        Jinx: ["Punk", "Mosher"],
+                        Kayle: ["Pentakill", "Edgelord"],
+                        Karthus: ["Pentakill", "Executioner"],
+                        Kennen: ["Punk", "Superfan"],
+                        Lucian: ["Jazz", "Rapidfire"],
+                        Lillia: ["KDA", "Spellweaver"],
+                        Lulu: ["Hyperpop", "Spellweaver"],
+                        Lux: ["EDM", "Spellweaver"],
+                        MissFortune: ["Disco", "Big Shot"],
+                        Mordekaiser: ["Pentakill", "Mosher"],
+                        Nami: ["EDM", "Superfan"],
+                        Neeko: ["Hyperpop", "Guardian"],
+                        Olaf: ["Pentakill", "Bruiser"],
+                        Pantheon: ["Country", "Bruiser"],
+                        Poppy: ["8-bit", "Mosher"],
+                        Qiyana: ["True Damage", "Mosher"],
+                        Samira: ["Jazz", "Executioner"],
+                        Senna: ["True Damage", "Executioner"],
+                        Seraphine: ["KDA", "Big Shot"],
+                        Sett: ["Country", "Edgelord"],
+                        Sona: ["EDM", "Sentinel"],
+                        TahmKench: ["Jazz", "Bruiser"],
+                        Taric: ["Disco", "Sentinel"],
+                        Thresh: ["Pentakill", "Guardian"],
+                        TwistedFate: ["Disco", "Dazzler"],
+                        TwistedFateRemix: ["Disco", "Big Shot"],
+                        Twitch: ["Punk", "Executioner"],
+                        Urgot: ["Country", "Executioner"],
+                        Vex: ["Emo", "Executioner"],
+                        Vi: ["Punk", "Bruiser"],
+                        Viego: ["Pentakill", "Edgelord"],
+                        Yone: ["Pentakill", "Edgelord"],
+                        Yorick: ["Pentakill", "Sentinel"],
+                        Zed: ["True Damage", "Edgelord"],
+                        Ziggs: ["Hyperpop", "Dazzler"],
+                        Zilean: ["Disco", "Dazzler"],
+                    };
 
-                        let role;
-                        if (champ.id.includes("TFT")) {
-                            const parts = champ.id.split("_");
-                            role = parts.length > 1 ? parts[1] : "Unknown";
-                        } else {
-                            role = "Unknown";
-                        }
+                    characters = Object.values(champData).map((champ) => {
+                        const traits = set10Traits[champ.name] || [];
+                        const primaryTrait =
+                            traits.length > 0 ? traits[0] : "TFT Champion";
 
                         return {
-                            name: name,
-                            role: role,
-                            image: `${champ.id.toLowerCase()}.png`,
+                            name: champ.name,
+                            role: primaryTrait, // Use the primary trait as the role
+                            image: champ.image ? champ.image.full : "",
                             description: "TFT champion",
                         };
                     });
@@ -79,7 +128,6 @@ async function fetchCharacterDetails(game) {
                     console.error(`ERROR: TFT API fetch failed: ${e.message}`);
                 }
                 break;
-
             case "Marvel Rivals":
                 try {
                     const url = "https://marvelrivalsapi.com/api/v1/heroes";

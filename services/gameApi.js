@@ -51,51 +51,87 @@ export async function getLeagueCharacters(includeDetails = false) {
 // Teamfight Tactics
 export async function getTFTChampions(includeDetails = false) {
     const version = "13.24.1";
-    const url = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/tft-champion.json`;
+    const champUrl = `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/tft-champion.json`;
 
-    const res = await axios.get(url);
-    const data = res.data.data;
+    // Static mapping for Set 10
+    const set10Traits = {
+        Ahri: ["KDA", "Spellweaver"],
+        Akali: ["KDA", "Breakout"],
+        Amumu: ["Emo", "Guardian"],
+        Annie: ["Emo", "Superfan"],
+        Aphelios: ["Country", "Rapidfire"],
+        Bard: ["Jazz", "Sentinel"],
+        Blitzcrank: ["Disco", "Guardian"],
+        Caitlyn: ["8-bit", "Rapidfire"],
+        Corki: ["Country", "Mosher"],
+        Ekko: ["True Damage", "Sentinel"],
+        Evelynn: ["KDA", "Executioner"],
+        Garen: ["8-bit", "Bruiser"],
+        Gragas: ["Jazz", "Bruiser"],
+        Jax: ["EDM", "Mosher"],
+        Jhin: ["Maestro", "Big Shot"],
+        Jinx: ["Punk", "Mosher"],
+        Kayle: ["Pentakill", "Edgelord"],
+        Karthus: ["Pentakill", "Executioner"],
+        Kennen: ["Punk", "Superfan"],
+        Lucian: ["Jazz", "Rapidfire"],
+        Lillia: ["KDA", "Spellweaver"],
+        Lulu: ["Hyperpop", "Spellweaver"],
+        Lux: ["EDM", "Spellweaver"],
+        MissFortune: ["Disco", "Big Shot"],
+        Mordekaiser: ["Pentakill", "Mosher"],
+        Nami: ["EDM", "Superfan"],
+        Neeko: ["Hyperpop", "Guardian"],
+        Olaf: ["Pentakill", "Bruiser"],
+        Pantheon: ["Country", "Bruiser"],
+        Poppy: ["8-bit", "Mosher"],
+        Qiyana: ["True Damage", "Mosher"],
+        Samira: ["Jazz", "Executioner"],
+        Senna: ["True Damage", "Executioner"],
+        Seraphine: ["KDA", "Big Shot"],
+        Sett: ["Country", "Edgelord"],
+        Sona: ["EDM", "Sentinel"],
+        TahmKench: ["Jazz", "Bruiser"],
+        Taric: ["Disco", "Sentinel"],
+        Thresh: ["Pentakill", "Guardian"],
+        TwistedFate: ["Disco", "Dazzler"],
+        TwistedFateRemix: ["Disco", "Big Shot"],
+        Twitch: ["Punk", "Executioner"],
+        Urgot: ["Country", "Executioner"],
+        Vex: ["Emo", "Executioner"],
+        Vi: ["Punk", "Bruiser"],
+        Viego: ["Pentakill", "Edgelord"],
+        Yone: ["Pentakill", "Edgelord"],
+        Yorick: ["Pentakill", "Sentinel"],
+        Zed: ["True Damage", "Edgelord"],
+        Ziggs: ["Hyperpop", "Dazzler"],
+        Zilean: ["Disco", "Dazzler"],
+    };
 
-    if (includeDetails) {
-        return Object.values(data).map((champ) => {
-            let role = "TFT Champion";
-            if (
-                champ.traits &&
-                Array.isArray(champ.traits) &&
-                champ.traits.length > 0
-            ) {
-                role = champ.traits[0];
-            }
-            let imageUrl = "";
-            if (champ.image && champ.image.full) {
-                imageUrl = `https://ddragon.leagueoflegends.com/cdn/${version}/img/tft-champion/${champ.image.full}`;
-            }
+    try {
+        const res = await axios.get(champUrl);
+        const champions = res.data.data;
+
+        return Object.values(champions).map((champ) => {
+            const imageUrl = champ.image
+                ? `https://ddragon.leagueoflegends.com/cdn/${version}/img/tft-champion/${champ.image.full}`
+                : "";
+
+            const traits = set10Traits[champ.name] || [];
 
             return {
                 name: champ.name,
-                role: role,
-                imageUrl: imageUrl,
-                description:
-                    champ.ability?.desc || `A champion in Teamfight Tactics`,
+                imageUrl,
+                traits: traits.map((t) => ({
+                    name: t,
+                    icon: "",
+                })),
+                description: champ.ability?.desc || "A champion in TFT",
             };
         });
-    } else {
-        return Object.values(data).map((champ) => {
-            const championData = {
-                name: champ.name,
-                traits: ["TFT Champion"],
-            };
-
-            if (
-                champ.traits &&
-                Array.isArray(champ.traits) &&
-                champ.traits.length > 0
-            ) {
-                championData.traits = champ.traits;
-            }
-
-            return championData;
-        });
+    } catch (err) {
+        console.error("Error fetching TFT champions:", err.message);
+        return [];
     }
 }
 
