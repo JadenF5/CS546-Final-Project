@@ -75,6 +75,14 @@
   white-space: normal;
 }
 
+.new-post-form .hint {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: normal;
+  margin-top: 0.25rem;
+}
+
 
 .back-link-container {
     text-align: center;

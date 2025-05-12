@@ -75,7 +75,8 @@
         <div class="threads-actions">
             <a href="/posts/new?game={{encodeURIComponent game.name}}" class="btn btn-primary">Create New Thread</a>
             <div class="thread-filters">
-                <select id="characterFilter">
+                {{!-- obsolete to have characterFilter when a user can already view threads for a character --}}
+                {{!-- <select id="characterFilter"> 
                     <option value="">All Characters</option>
                     {{#if game.charactersWithImages}}
                         {{#each game.charactersWithImages}}
@@ -86,7 +87,7 @@
                             <option value="{{this.name}}">{{this.name}}</option>
                         {{/each}}
                     {{/if}}
-                </select>
+                </select> --}}
                 <select id="threadSort">
                     <option value="latest">Latest</option>
                     <option value="popular">Most Popular</option>

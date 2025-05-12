@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/threads/:gameName/:characterName", requireLogin, async (req, res) => {
     try {
         const { gameName, characterName } = req.params;
-        const sortOption = req.query.sort || "pinned";
+        const sortOption = req.query.sort || "pinned";  // Direct to pinned by default
 
         const gamesCollection = await games();
         const postsCollection = await posts();
@@ -22,14 +22,13 @@ router.get("/threads/:gameName/:characterName", requireLogin, async (req, res) =
         }
 
         // Build sorting logic
-        let sortCriteria = { pinned: -1 };  // Pinned always appears first
+        let sortCriteria = {};  
         if (sortOption === "liked") {
-            sortCriteria.likes = -1;
-            sortCriteria.timestamp = -1;
+            sortCriteria = { likes: -1, timestamp: -1 };
         } else if (sortOption === "pinned") {
-            sortCriteria.timestamp = -1;    // "all" is now "pinned", they are essentially the same
+            sortCriteria = { pinned: -1, timestamp: -1 };
         } else {
-            sortCriteria.timestamp = -1;    // latest = pinned basically
+            sortCriteria = { timestamp: -1 };
         }
 
         const threads = await postsCollection

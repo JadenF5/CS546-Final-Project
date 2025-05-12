@@ -122,14 +122,46 @@ router.post("/posts/new", requireLogin, async (req, res) => {
       if (idx === allFiles.length) {
         (async () => {
           try {
-            const tagList = tags
-              ? Array.isArray(tags)
-                ? tags
-                : tags
-                    .split(",")
-                    .map((t) => t.trim())
-                    .filter((t) => t)
-              : [];
+            let rawTags = [];
+            if (tags) {
+              if (Array.isArray(tags)) {
+                rawTags = tags;
+              } else {
+                rawTags = tags.split(",").map(t => t.trim());
+              }
+            }
+            
+            // No empty tags
+            const tagList = rawTags.filter(t => t.length > 0);
+
+            // Ensure tags are unique, and force lowercase
+            const seen = new Set();
+            const uniqueTags = [];
+            for (const t of tagList) {
+              const lower = t.toLowerCase();
+              if (!seen.has(lower)) {
+                seen.add(lower);
+                uniqueTags.push(t);
+              }
+            }
+
+            // 5 tags max
+            if (uniqueTags.length > 5) {
+              return res.status(400).render("error", {
+                title: "Too Many Tags",
+                error: "You may specify at most 5 tags."
+              });
+            }
+
+            // Max of 10 characters per tag
+            for (const t of uniqueTags) {
+              if (t.length > 10) {
+                return res.status(400).render("error", {
+                  title: "Tag Too Long",
+                  error: `Tag “${t}” is ${t.length} characters, please keep each tag less than 10 characters.`
+                });
+              }
+            }
 
             const postsCollection = await posts();
             const usersCollection = await users();
@@ -142,7 +174,7 @@ router.post("/posts/new", requireLogin, async (req, res) => {
               character: character || null,
               title,
               body,
-              tags: tagList,
+              tags: uniqueTags,
               media,
               likes: 0,
               likedBy: [],
