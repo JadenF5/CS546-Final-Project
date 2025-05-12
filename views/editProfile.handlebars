@@ -3,8 +3,8 @@
     <form action="/profile/edit" method="POST">
         {{!-- Bio --}}
         <div class="form-group">
-            <label for="bio">Bio</label>
-            <textarea name="bio" id="bio" rows="4">{{user.bio}}</textarea>
+            <label for="bio">Bio (Max Characters: 1000)</label>
+            <textarea name="bio" id="bio" rows="4" maxlength="1000">{{user.bio}}</textarea>
         </div>
 
         {{!-- Platforms --}}

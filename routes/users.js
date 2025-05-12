@@ -307,6 +307,13 @@ router.post("/profile/edit", requireLogin, async (req, res) => {
             privacy_showAchievements,
         } = req.body;
 
+        if (bio && bio.length > 1000) {
+            return res.status(400).render("error", {
+              title: "Bio Too Long",
+              error: "Your bio is too long. Please keep it under 1000 characters."
+            });
+          }
+
         const updates = {
             bio: xss(bio ?? user.bio),
             platforms: platforms

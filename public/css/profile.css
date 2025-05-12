@@ -95,6 +95,8 @@
 .bio p {
     line-height: 1.6;
     color: #444;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 /* Platforms section */
