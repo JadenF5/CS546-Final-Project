@@ -87,6 +87,17 @@ router.get("/profile/:id", async (req, res) => {
                 achievementEmojis[a.name] = { emoji: a.emoji };
             }
 
+        if (user.achievements && Array.isArray(user.achievements)) {
+            user.achievements = user.achievements.map((a) => ({
+                ...a,
+                earnedOn: new Date(a.earnedOn).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                }),
+            }));
+        }
+
         if (!user) {
             return res.status(404).render("error", {
                 title: "Not Found",

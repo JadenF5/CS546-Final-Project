@@ -31,7 +31,12 @@ router.get("/achievements", requireLogin, async (req, res) => {
     const userAchievements = (user.achievements || []).map((a) => a.name);
     const earnedMap = {};
     for (const a of user.achievements || []) {
-        earnedMap[a.name] = a.earnedOn;
+        const earned = new Date(a.earnedOn);
+        earnedMap[a.name] = earned.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
     }
 
     res.render("achievements", {
