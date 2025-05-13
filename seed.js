@@ -1,4 +1,4 @@
-import { users, posts, games } from "./config/mongoCollections.js";
+import { users, posts, games, notifications, teammatePosts } from "./config/mongoCollections.js";
 import { dbConnection, closeConnection } from "./config/mongoConnection.js";
 import bcrypt from "bcryptjs";
 
@@ -12,265 +12,261 @@ async function seedUsers() {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash("Password123!", saltRounds);
 
+    const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString();
+
     // Sample users
-    const userData = [
-        {
-            email: "admin@example.com",
-            hashedPassword,
-            username: "admin",
-            role: "admin",
-            bio: "Administrator account for the GameForum platform",
-            platforms: ["PC", "PlayStation", "Xbox"],
-            selectedGames: ["League of Legends", "Valorant"],
-            favoriteCharacters: {
-                "League of Legends": ["Garen", "Lux"],
-                Valorant: ["Jett", "Sage"],
-            },
-            friends: [],
-            privacySettings: {
-                profilePublic: true,
-                showPosts: true,
-                showCharacters: true,
-                showBio: true,
-                showAchievements: true,
-            },
-            achievements: [
-                {
-                    name: "First Sign Up!",
-                    earnedOn: new Date().toISOString().split("T")[0],
-                },
-                {
-                    name: "First Post!",
-                    earnedOn: new Date().toISOString().split("T")[0],
-                },
-            ],
-            createdAt: new Date().toISOString(),
+    const userDocs = [
+    {
+      email: "admin@example.com",
+      hashedPassword,
+      username: "TheAdmin",
+      role: "admin",
+      bio: "Administrator account for the GameForum platform",
+      platforms: ["PC", "Xbox"],
+      selectedGames: ["League of Legends", "Valorant"],
+      favoriteCharacters: {
+        "League of Legends": ["Garen"],
+        Valorant: ["Jett"]
+      },
+      friends: [],      // will fill in below
+      privacySettings: {
+        profilePublic:    true,
+        showPosts:        true,
+        showCharacters:   true,
+        showBio:          true,
+        showAchievements: true
+      },
+      achievements: [
+        { name: "First Sign Up!", earnedOn: new Date().toISOString().split("T")[0], },
+        { name: "First Post!", earnedOn: new Date().toISOString().split("T")[0], },
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      email: "oldgamer@example.com",
+      hashedPassword,
+      username: "vintagePlayer",
+      role: "user",
+      bio: "I've been here a while…",
+      platforms: ["PC"],
+      selectedGames: ["League of Legends", "Marvel Rivals"],
+      favoriteCharacters: {
+        "League of Legends": ["Lux"],
+        "Marvel Rivals":    ["Iron Man"]
+      },
+      friends: [],
+      privacySettings: {
+        profilePublic:    true,
+        showPosts:        true,
+        showCharacters:   true,
+        showBio:          true,
+        showAchievements: true
+      },
+      achievements: [
+        { name: "First Sign Up!", earnedOn: new Date().toISOString() }
+      ],
+      // backdate this account 30 days
+      createdAt: thirtyDaysAgo
+    },
+    {
+      email: "newbie@example.com",
+      hashedPassword,
+      username: "freshGamer",
+      role: "user",
+      bio: "Just getting started.",
+      platforms: ["PlayStation"],
+      selectedGames: ["Valorant", "Overwatch 2"],
+      favoriteCharacters: {
+        "Valorant":      ["Sage"],
+        "Overwatch 2": ["Tracer"]
+      },
+      friends: [],
+      privacySettings: {
+        profilePublic:    true,
+        showPosts:        true,
+        showCharacters:   true,
+        showBio:          true,
+        showAchievements: true
+      },
+      achievements: [
+        { name: "First Sign Up!", earnedOn: new Date().toISOString().split("T")[0], },
+        { name: "First Post!", earnedOn: new Date().toISOString().split("T")[0], },
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      email: "pro@example.com",
+      hashedPassword,
+      username: "powerPoster",
+      role: "user",
+      bio: "I post a lot.",
+      platforms: ["PC","Mobile"],
+      selectedGames: ["Teamfight Tactics","Marvel Rivals"],
+      favoriteCharacters: {
+        "Teamfight Tactics": ["spider-man"],
+        "Marvel Rivals":     ["doctor strange"]
+      },
+      friends: [],
+      privacySettings: {
+        profilePublic:    true,
+        showPosts:        true,
+        showCharacters:   true,
+        showBio:          true,
+        showAchievements: true
+      },
+      achievements: [
+        { name: "First Sign Up!", earnedOn: new Date().toISOString().split("T")[0], },
+        { name: "First Post!", earnedOn: new Date().toISOString().split("T")[0], },
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+        // one user with 49 likes for achivement testing
+        email: "famous@example.com",
+        hashedPassword,
+        username: "superStar",
+        role: "user",
+        bio: "I am so close to being famous!",
+        platforms: ["PC"],
+        selectedGames: ["League of Legends"],
+        favoriteCharacters: { "League of Legends": ["Lux"] },
+        friends: [],
+        privacySettings: {
+            profilePublic:    true,
+            showPosts:        true,
+            showCharacters:   true,
+            showBio:          true,
+            showAchievements: true
         },
-        {
-            email: "user1@example.com",
-            hashedPassword,
-            username: "gamer123",
-            role: "user",
-            bio: "Avid gamer who loves MOBAs and FPS games",
-            platforms: ["PC"],
-            selectedGames: [
-                "League of Legends",
-                "Valorant",
-                "Marvel Rivals",
-                "Overwatch 2",
-            ],
-            favoriteCharacters: {
-                "League of Legends": ["Ezreal", "Lux"],
-                Valorant: ["Jett"],
-                "Marvel Rivals": ["Iron Man", "Doctor Strange"],
-                "Overwatch 2": ["Tracer", "Mercy"],
-            },
-            friends: [],
-            privacySettings: {
-                profilePublic: true,
-                showPosts: true,
-                showCharacters: true,
-                showBio: true,
-                showAchievements: true,
-            },
-            achievements: [
-                {
-                    name: "First Sign Up!",
-                    earnedOn: new Date().toISOString().split("T")[0],
-                },
-                {
-                    name: "First Post!",
-                    earnedOn: new Date().toISOString().split("T")[0],
-                },
-            ],
-            createdAt: new Date().toISOString(),
-        },
-    ];
+        achievements: [
+            { name: "First Sign Up!", earnedOn: new Date().toISOString().split("T")[0], },
+            { name: "First Post!", earnedOn: new Date().toISOString().split("T")[0], },
+        ],
+        createdAt: new Date().toISOString()
+    }
+  ];
 
-    const insertResults = await userCollection.insertMany(userData);
-    console.log("User data seeded successfully");
+  // insert them all at once
+  const { insertedIds } = await userCollection.insertMany(userDocs);
+  console.log("Seeded users:", insertedIds);
 
-    const usersList = await userCollection.find({}).toArray();
+  // wire up friendships
+  // TheAdmin ↔ vintagePlayer
+  await userCollection.updateOne(
+    { _id: insertedIds[0] },
+    { $set: { friends: [insertedIds[1].toString()] } }
+  );
+  await userCollection.updateOne(
+    { _id: insertedIds[1] },
+    { $set: { friends: [insertedIds[0].toString(), insertedIds[2].toString()] } }
+  );
+  // vintagePlayer ↔ freshGamer already above, now freshGamer ↔ powerPoster
+  await userCollection.updateOne(
+    { _id: insertedIds[2] },
+    { $set: { friends: [insertedIds[1].toString(), insertedIds[3].toString()] } }
+  );
+  await userCollection.updateOne(
+    { _id: insertedIds[3] },
+    { $set: { friends: [insertedIds[2].toString()] } }
+  );
 
-    const user1Id = usersList[0]._id.toString();
-    const user2Id = usersList[1]._id.toString();
-
-    await userCollection.updateOne(
-        { _id: usersList[0]._id },
-        { $set: { friends: [user2Id] } }
-    );
-
-    await userCollection.updateOne(
-        { _id: usersList[1]._id },
-        { $set: { friends: [user1Id] } }
-    );
-
-    console.log("User friendships updated");
-
-    return usersList;
+  // finally fetch & return the array of user objects
+  const seeded = await userCollection.find({}).toArray();
+  return seeded;
 }
 
 async function seedPosts(usersList, gamesList) {
-    const postsCollection = await posts();
+  const postsCollection = await posts();
+  await postsCollection.deleteMany({});
 
-    await postsCollection.deleteMany({});
+  // build a quick map username → _id
+  const userMap = {};
+  for (const u of usersList) {
+    userMap[u.username] = u._id.toString();
+  }
 
-    const postData = [];
+  // the exact order of games and which characters to use
+  const ORDERED_GAMES = [
+    "League of Legends",
+    "Valorant",
+    "Marvel Rivals",
+    "Overwatch 2",
+    "Teamfight Tactics"
+  ];
 
-    const user1 = usersList[0];
-    const user2 = usersList[1];
+  const GAME_CHARACTERS = {
+    "League of Legends": ["Garen", "Lux", "Ahri"],
+    "Valorant":          ["Jett", "Sage", "Phoenix"],
+    "Marvel Rivals":     ["iron Man", "doctor strange", "spider-man"],
+    "Overwatch 2":       ["Tracer", "Mercy", "Reaper"],
+    "Teamfight Tactics": ["Annie", "Yasuo", "Lulu"]
+  };
 
-    const getRandomCharacter = (gameName) => {
-        const game = gamesList.find((g) => g.name === gameName);
-        if (game && game.characters && game.characters.length > 0) {
-            const randomIndex = Math.floor(
-                Math.random() * game.characters.length
-            );
-            return game.characters[randomIndex].name;
-        }
-        return null;
-    };
+  const POSTS_PER_GAME = 5;
+  const postDocs = [];
+  let hourOffset = 0;
+  let powerCount = 0;
 
-    const lolGame = gamesList.find((g) => g.name === "League of Legends");
-    const lolChars = lolGame?.characters || [];
+  for (const gameName of ORDERED_GAMES) {
+    const chars = GAME_CHARACTERS[gameName] || [null];
+    for (let i = 0; i < POSTS_PER_GAME; i++) {
+      // pick character by its index (wrap if needed)
+      const character = chars[i % chars.length] || "N/A";
 
-    if (lolChars.length > 0) {
-        postData.push({
-            userId: user1._id.toString(),
-            username: user1.username,
-            game: "League of Legends",
-            character: lolChars[0].name,
-            title: `Best ${lolChars[0].name} build for season 14`,
-            body: `I've been trying different builds for ${lolChars[0].name} in season 14, and here's what I found most effective...`,
-            tags: ["strategy", "build", lolChars[0].role.toLowerCase()],
-            media: [],
-            likes: 1,
-            comments: [
-                {
-                    _id: new Date().getTime().toString(),
-                    userId: user2._id.toString(),
-                    username: user2.username,
-                    comment: "Great build! I'll try it in my next game.",
-                    timestamp: new Date().toISOString(),
-                },
-            ],
-            timestamp: new Date().toISOString(),
-        });
+      // assign poster: first 9 to powerPoster, then a fixed cycle
+      let username;
+      if (powerCount < 9) {
+        username = "powerPoster";
+        powerCount++;
+      } else {
+        // cycle through the others in a known order
+        const OTHERS = ["vintagePlayer", "freshGamer", "TheAdmin"];
+        username = OTHERS[i % OTHERS.length];
+      }
+      const userId = userMap[username];
 
-        if (lolChars.length > 1) {
-            postData.push({
-                userId: user2._id.toString(),
-                username: user2.username,
-                game: "League of Legends",
-                character: lolChars[1].name,
-                title: `${lolChars[1].name} support vs mid - which is better now?`,
-                body: `With the recent changes to ${lolChars[1].name}, I'm wondering if they're better as a support or mid laner...`,
-                tags: ["discussion", "meta"],
-                media: [],
-                likes: 8,
-                comments: [],
-                timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-            });
-        }
-    } else {
-        postData.push({
-            userId: user1._id.toString(),
-            username: user1.username,
-            game: "League of Legends",
-            character: "Garen",
-            title: "Best Garen build for top lane season 14",
-            body: "I've been trying different builds for Garen in season 14, and here's what I found most effective...",
-            tags: ["strategy", "build", "top lane"],
-            media: [],
-            likes: 15,
-            comments: [
-                {
-                    _id: new Date().getTime().toString(),
-                    userId: user2._id.toString(),
-                    username: user2.username,
-                    comment: "Great build! I'll try it in my next game.",
-                    timestamp: new Date().toISOString(),
-                },
-            ],
-            timestamp: new Date().toISOString(),
-        });
+      // likes follow a small formula
+      const likes = ((i + hourOffset) * 7) % 30;
+
+      const timestamp = new Date(
+        Date.now() - hourOffset * 60 * 60 * 1000
+      ).toISOString();
+      hourOffset++;
+
+      postDocs.push({
+        userId,
+        username,
+        game:      gameName,
+        character,
+        title:     `${character} strategy guide #${i+1}`,
+        body:      `Some tips on playing ${character} in ${gameName}.`,
+        tags:      ["strategy", "guide"],
+        media:     [],
+        likes,
+        comments:  [],
+        timestamp
+      });
     }
+  }
 
-    // Create posts for Valorant
-    const valorantGame = gamesList.find((g) => g.name === "Valorant");
-    const valorantChars = valorantGame?.characters || [];
+  const adminId = userMap["TheAdmin"];
+  postDocs.push({
+    userId:   adminId,
+    username: "TheAdmin",
+    game:     "Overwatch 2",
+    character:"Tracer",
+    title:    "My 49-like Milestone Post",
+    body:     "This is the single post that has exactly 49 likes!",
+    tags:     ["milestone"],
+    media:    [],
+    likes:    49,
+    pinned: true,
+    comments: [],
+    timestamp: new Date().toISOString()
+  });
 
-    if (valorantChars.length > 0) {
-        postData.push({
-            userId: user1._id.toString(),
-            username: user1.username,
-            game: "Valorant",
-            character: valorantChars[0].name,
-            title: `${valorantChars[0].name} nerf - how to adapt?`,
-            body: `Since the recent nerf to ${valorantChars[0].name}'s abilities, I've had to change my playstyle. Here's what's working...`,
-            tags: ["strategy", "tips"],
-            media: [],
-            likes: 23,
-            comments: [
-                {
-                    _id: new Date().getTime().toString(),
-                    userId: user2._id.toString(),
-                    username: user2.username,
-                    comment:
-                        "I totally agree! The timing window is much trickier now.",
-                    timestamp: new Date().toISOString(),
-                },
-            ],
-            timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-        });
-    }
-
-    // Create posts for Marvel Rivals
-    const marvelGame = gamesList.find((g) => g.name === "Marvel Rivals");
-    const marvelChars = marvelGame?.characters || [];
-
-    if (marvelChars.length > 0) {
-        postData.push({
-            userId: user2._id.toString(),
-            username: user2.username,
-            game: "Marvel Rivals",
-            character: marvelChars[0].name,
-            title: `${marvelChars[0].name} combo guide for beginners`,
-            body: `If you're new to playing ${marvelChars[0].name} in Marvel Rivals, here are some basic combos to get you started...`,
-            tags: ["guide", "beginners"],
-            media: [],
-            likes: 12,
-            comments: [],
-            timestamp: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
-        });
-    }
-
-    // Post for Overwatch 2
-    const owGame = gamesList.find((g) => g.name === "Overwatch 2");
-    const owChars = owGame?.characters || [];
-
-    if (owChars.length > 0) {
-        const dpsChar = owChars.find((c) => c.role === "Damage") || owChars[0];
-
-        postData.push({
-            userId: user1._id.toString(),
-            username: user1.username,
-            game: "Overwatch 2",
-            character: dpsChar.name,
-            title: `${dpsChar.name} tips for beginners`,
-            body: `Mastering ${dpsChar.name}'s abilities can carry games. Here's what worked for me...`,
-            tags: ["guide", dpsChar.name.toLowerCase(), "mechanics"],
-            media: [],
-            likes: 10,
-            comments: [],
-            timestamp: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
-        });
-    }
-
-    await postsCollection.insertMany(postData);
-    console.log("Post data seeded successfully");
-
-    return postData;
+  await postsCollection.insertMany(postDocs);
+  console.log(`Inserted ${postDocs.length} posts`);
 }
 
 // Execute the seed function
@@ -278,6 +274,13 @@ async function main() {
     const db = await dbConnection();
     try {
         console.log("Starting database seeding...");
+        const gameCollection = await games();
+        const notificationCollection = await notifications();
+        const teammatePostsCollection = await teammatePosts();
+
+        await gameCollection.deleteMany({});
+        await notificationCollection.deleteMany({});
+        await teammatePostsCollection.deleteMany({});
 
         console.log("Ensuring games are initialized...");
         const gamesList = await gameData.initializeGames();
